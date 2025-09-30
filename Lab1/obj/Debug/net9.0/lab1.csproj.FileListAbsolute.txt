@@ -1,0 +1,14 @@
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.GeneratedMSBuildEditorConfig.editorconfig
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.AssemblyInfoInputs.cache
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.AssemblyInfo.cs
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.csproj.CoreCompileInputs.cache
+C:\University\Programming\DataPresentation\Lab1\bin\Debug\net9.0\lab1.exe
+C:\University\Programming\DataPresentation\Lab1\bin\Debug\net9.0\lab1.deps.json
+C:\University\Programming\DataPresentation\Lab1\bin\Debug\net9.0\lab1.runtimeconfig.json
+C:\University\Programming\DataPresentation\Lab1\bin\Debug\net9.0\lab1.dll
+C:\University\Programming\DataPresentation\Lab1\bin\Debug\net9.0\lab1.pdb
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.dll
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\refint\lab1.dll
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.pdb
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\lab1.genruntimeconfig.cache
+C:\University\Programming\DataPresentation\Lab1\obj\Debug\net9.0\ref\lab1.dll
