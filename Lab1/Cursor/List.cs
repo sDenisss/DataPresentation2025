@@ -190,21 +190,6 @@ public class List<T> where T : IEquatable<T>
     }
     
     /// <summary>
-    /// Возвращает позицию предыдущего элемента перед указанной позицией
-    /// </summary>
-    /// <param name="position">Текущая позиция</param>
-    /// <returns>Предыдущая позиция</returns>
-    /// <exception cref="Exception">Если позиция неверная или это первый элемент</exception>
-    public Position Previous(Position position)
-    {
-        int prev;
-        if (position.Posit < 0 || (prev = GetPrevious(position.Posit)) == -1)
-            throw new Exception("Позиции нет в списке");
-
-        return new Position(prev);
-    }
-    
-    /// <summary>
     /// Очищает список, делая его пустым
     /// </summary>
     public void Makenull()

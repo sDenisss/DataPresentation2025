@@ -12,5 +12,4 @@ public class Node<T>
         Next = next;
         Previous = previous;
     }
-
 }

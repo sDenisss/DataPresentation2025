@@ -2,10 +2,12 @@
 
 using Lab1.Cursor;
 using Lab1.DoublyLinked;
-// using CursorList = Lab1.Cursor.List<Addressee>;
-// using DoublyLinked = Lab1.DoublyLinked.List<Addressee>;
-using SomeList = Cursor.List<Addressee>;
-using SomePosition = Lab1.Cursor.Position;
+// -----Cursor-----
+// using SomeList = Cursor.List<Addressee>;
+// using SomePosition = Lab1.Cursor.Position;
+// -----DoublyLinked-----
+using SomeList = DoublyLinked.List<Addressee>;
+using SomePosition = Lab1.DoublyLinked.Position<Addressee>;
 
 public class Program
 {
@@ -17,7 +19,6 @@ public class Program
 
         DeleteDuplicates(list);
         list.PrintList();
-
     }
 
     public static void WriteInList(SomeList list)
@@ -71,9 +72,12 @@ public class Program
                 // Переходим к следующему элементу
                 search = nextSearch;
             }
-            
+
             // Переходим к следующему элементу внешнего цикла
             current = nextCurrent;
+            
+            if(current.Posit == list.End().Posit)
+                break;
         }
     }
 }
