@@ -52,6 +52,20 @@ public class List<T> where T : IEquatable<T>
                 _head = newNode;
             }
         }
+        else if (CheckPosition(position))
+        {
+            Node<T> previousNode = newNode.Previous!;
+            Node<T> nextNode = newNode.Next!;
+
+
+
+            previousNode.Next = newNode;
+            nextNode.Previous = newNode;
+        }
+        else
+        {
+            throw new Exception("Позиция неверная для вставки!");
+        }
     }
 
     /// <summary>
@@ -82,7 +96,7 @@ public class List<T> where T : IEquatable<T>
         if (position.Posit == _end.Posit)
             throw new Exception("Неверная позиция!");
 
-        return position.Posit.Value;
+        return position.Posit!.Value!;
     }
 
     /// <summary>
@@ -217,20 +231,21 @@ public class List<T> where T : IEquatable<T>
         return _head == null;
     }
 
-    // /// <summary>
-    // /// Проверяет, существует ли позиция в списке
-    // /// </summary>
-    // /// <param name="index">Индекс для проверки</param>
-    // /// <returns>true если позиция существует, иначе false</returns>
-    // private bool CheckPosition(int index)
-    // {
-    //     if (index == _end.Posit) return false;  // End() не считается валидной позицией для операций
-    //     int current = _start.Posit;
-    //     while (current != -1)
-    //     {
-    //         if (current == index) return true;
-    //         current = Nodes[current].Next;
-    //     }
-    //     return false;
-    // }
+    /// <summary>
+    /// Проверяет, существует ли позиция в списке
+    /// </summary>
+    private bool CheckPosition(Position<T> position)
+    {
+        if (position.Posit == null || position.Posit == End().Posit)
+            return false;
+
+        Node<T> current = _head!;
+        while (current != null)
+        {
+            if (current == position.Posit)
+                return true;
+            current = current.Next!;
+        }
+        return false;
+    }
 }

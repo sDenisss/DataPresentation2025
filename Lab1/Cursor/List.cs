@@ -81,32 +81,70 @@ public class List<T> where T : IEquatable<T>
             // ОБНОВЛЯЕМ _space на ЗАПОМНЕННУЮ следующую свободную
             _space.Posit = nextFree;
         }
-        // Вставка в начало списка
-        else if (position.Posit == First().Posit)
+        else if (CheckPosition(position.Posit))
         {
-            if (_space.Posit == -1)
-                throw new Exception("Нет свободного места в списке!");
-
             int freeIndex = _space.Posit;
             int nextFree = Nodes[freeIndex].Next;
 
-            // Копируем текущий первый элемент в свободную ячейку
-            Nodes[freeIndex].Value = Nodes[position.Posit].Value;
-            Nodes[freeIndex].Next = Nodes[position.Posit].Next;
+            // 🔥 Ключевое исправление: находим предыдущий элемент
+            int previousIndex = GetPrevious(position.Posit);
 
-            // В старую первую ячейку записываем новый элемент
-            Nodes[position.Posit].Value = item;
-            Nodes[position.Posit].Next = freeIndex;
+            // Заполняем новую ячейку данными
+            Nodes[freeIndex].Value = item;
+            
+            // Новая ячейка указывает на целевую позицию
+            Nodes[freeIndex].Next = position.Posit;
 
-            // Обновляем _space
+            // Если вставляем в начало
+            if (previousIndex == -1)
+            {
+                _start.Posit = freeIndex;
+            }
+            else
+            {
+                // Предыдущий элемент теперь указывает на новую ячейку
+                Nodes[previousIndex].Next = freeIndex;
+            }
+
             _space.Posit = nextFree;
 
-            // Если это была первая вставка (список был пустой)
+            // Если список был пустой
             if (_start.Posit == -1)
             {
-                _start.Posit = position.Posit;
+                _start.Posit = freeIndex;
             }
         }
+        else
+        {
+            throw new Exception("Неверная позиция для вставки!");
+        }
+        // Вставка в начало списка
+        // else if (position.Posit == First().Posit)
+        // {
+        //     if (_space.Posit == -1)
+        //         throw new Exception("Нет свободного места в списке!");
+
+        //     int freeIndex = _space.Posit;
+        //     int nextFree = Nodes[freeIndex].Next;
+
+        //     // Копируем текущий первый элемент в свободную ячейку
+        //     Nodes[freeIndex].Value = Nodes[position.Posit].Value;
+        //     Nodes[freeIndex].Next = Nodes[position.Posit].Next;
+
+        //     // В старую первую ячейку записываем новый элемент
+        //     Nodes[position.Posit].Value = item;
+        //     Nodes[position.Posit].Next = freeIndex;
+
+        //     // Обновляем _space
+        //     _space.Posit = nextFree;
+
+        //     // Если это была первая вставка (список был пустой)
+        //     if (_start.Posit == -1)
+        //     {
+        //         _start.Posit = position.Posit;
+        //     }
+        // }
+        // Вставка в ЛЮБУЮ позицию (начало, середину)
     }
     
     /// <summary>
@@ -139,7 +177,7 @@ public class List<T> where T : IEquatable<T>
 
         return Nodes[position.Posit].Value;
     }
-    
+
     /// <summary>
     /// Удаляет элемент в указанной позиции
     /// </summary>
@@ -149,7 +187,7 @@ public class List<T> where T : IEquatable<T>
     {
         if (position.Posit < 0) throw new Exception("Данная позиция отсутствует в списке");
         int tmp;
-        
+
         // Удаляем первый элемент
         if (position.Posit == _start.Posit)
         {
@@ -161,17 +199,28 @@ public class List<T> where T : IEquatable<T>
             return;
         }
 
-        // Удаляем не первый элемент
+
         int prev = GetPrevious(position.Posit);
         if (prev == -1) throw new Exception("Данная позиция отсутствует в списке");
 
-        int current = Nodes[prev].Next;
-        Nodes[prev].Next = Nodes[current].Next;  // исключаем элемент из цепочки
+        // Обновляем ссылку предыдущего элемента
+        Nodes[prev].Next = Nodes[position.Posit].Next;
 
+        // Добавляем освободившуюся ячейку в список свободных
         tmp = _space.Posit;
-        _space = new Position(current);  // освобождаем ячейку
+        _space.Posit = position.Posit;
+        Nodes[_space.Posit].Next = tmp;
+        // Удаляем не первый элемент
+        // int prev = GetPrevious(position.Posit);
+        // if (prev == -1) throw new Exception("Данная позиция отсутствует в списке");
 
-        Nodes[_space.Posit].Next = tmp;  // добавляем в список свободных
+        // int current = Nodes[prev].Next;
+        // Nodes[prev].Next = Nodes[current].Next;  // исключаем элемент из цепочки
+
+        // tmp = _space.Posit;
+        // _space = new Position(current);  // освобождаем ячейку
+
+        // Nodes[_space.Posit].Next = tmp;  // добавляем в список свободных
     }
     
     /// <summary>
