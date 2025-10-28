@@ -1,14 +1,36 @@
-namespace Lab1.Interfaces;
-public interface IList<TList, TItem, TPosition> where TPosition : class
-{
-    // TPosition End(TList list);
-    // void Insert(TItem item, TPosition position, TList list);
-    // TPosition Locate(TItem item, TList list);
-    // TItem Retrieve(TPosition position, TList list);
-    // void Delete(TPosition position, TList list);
-    // TPosition Next(TPosition position, TList list);
-    // TPosition Previous(TPosition position, TList list);
-    // TPosition Makenull(TList list);
-    // TPosition First(TList list);
-    // void PrintList(TList list);
-}
+// using Lab1.Cursor;
+
+// namespace Lab1.Interfaces;
+
+// public interface IList<T> where T : IEquatable<T>
+// {
+//     /// <summary>Возвращает позицию после последнего элемента</summary>
+//     object End();
+    
+//     /// <summary>Вставляет элемент перед указанной позицией</summary>
+//     void Insert(T item, Position position);
+    
+//     /// <summary>Находит позицию первого вхождения элемента</summary>
+//     object Locate(T item);
+    
+//     /// <summary>Возвращает элемент в указанной позиции</summary>
+//     T Retrieve(object position);
+    
+//     /// <summary>Удаляет элемент в указанной позиции</summary>
+//     void Delete(object position);
+    
+//     /// <summary>Возвращает следующую позицию</summary>
+//     object Next(object position);
+    
+//     /// <summary>Возвращает предыдущую позицию</summary>
+//     object Previous(object position);
+    
+//     /// <summary>Очищает список</summary>
+//     void Makenull();
+    
+//     /// <summary>Возвращает позицию первого элемента</summary>
+//     object First();
+    
+//     /// <summary>Выводит список в консоль</summary>
+//     void PrintList();
+// }

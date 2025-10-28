@@ -1,6 +1,6 @@
 namespace Lab1.Cursor;
 
-public class List<T> where T : IEquatable<T>
+public class List<T>
 {
     // Статический массив всех узлов - общий для всех экземпляров списка
     private static readonly Node<T>[] Nodes;
@@ -9,9 +9,7 @@ public class List<T> where T : IEquatable<T>
     // Позиция первого элемента списка (-1 если список пуст)
     private Position _start = new Position(-1);
     // Позиция первого свободного узла в массиве
-    private Position _space = new Position(0);
-    // Специальная позиция "конец списка" (после последнего элемента)
-    private Position _end = new Position(-1);
+    private static int _space = 0;
 
     // Статический конструктор - инициализирует массив узлов один раз при загрузке класса
     static List()
@@ -40,9 +38,9 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Позиция конца списка</returns>
     public Position End()
     {
-        return _end;
+        return new Position(-1);
     }
-    
+
     /// <summary>
     /// Вставляет элемент в указанную позицию списка
     /// </summary>
@@ -51,102 +49,52 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если нет свободного места или неверная позиция</exception>
     public void Insert(T item, Position position)
     {
-        // Вставка в конец списка
-        if (position.Posit == End().Posit)
+        if (_space == -1)
         {
-            if (_space.Posit == -1)
-                throw new Exception("Нет свободного места в списке!");
-
-            int freeIndex = _space.Posit;
-
-            // ЗАПОМНИ следующую свободную ячейку ПРЕЖДЕ чем менять Nodes[freeIndex]
-            int nextFree = Nodes[freeIndex].Next;
-
-            // Теперь заполняем ячейку
-            Nodes[freeIndex].Value = item;
-            Nodes[freeIndex].Next = -1;  // новый элемент становится концом списка
-
-            // Если список пустой
-            if (_start.Posit == -1)
-            {
-                _start.Posit = freeIndex;  // новый элемент становится началом
-            }
-            else
-            {
-                // Находим последний элемент и обновляем его ссылку
-                int lastIndex = FindLastIndex();
-                Nodes[lastIndex].Next = freeIndex;
-            }
-
-            // ОБНОВЛЯЕМ _space на ЗАПОМНЕННУЮ следующую свободную
-            _space.Posit = nextFree;
+            Console.WriteLine("Нет свободного места в списке");
+            return;
         }
-        else if (CheckPosition(position.Posit))
+        
+        // Проверка валидности позиции
+        if (position.Posit != End().Posit && 
+            GetPrevious(position.Posit) == -1 && 
+            position.Posit != _start.Posit)
         {
-            int freeIndex = _space.Posit;
-            int nextFree = Nodes[freeIndex].Next;
+             Console.WriteLine("Неверная позиция для вставки");
+            return;
+        }
 
-            // 🔥 Ключевое исправление: находим предыдущий элемент
+        int freeIndex = _space;
+        int nextFree = Nodes[freeIndex].Next;
+        
+        if (position.Posit == End().Posit) {
+            // Вставка в конец
+            Nodes[freeIndex].Value = item;
+            Nodes[freeIndex].Next = -1;
+            
+            if (IsEmpty()) {
+                _start.Posit = freeIndex;
+            } else {
+                Nodes[LastPos()].Next = freeIndex;
+            }
+        }
+        else {
+            // Вставка в начало/середину через GetPrevious()
             int previousIndex = GetPrevious(position.Posit);
 
-            // Заполняем новую ячейку данными
             Nodes[freeIndex].Value = item;
-            
-            // Новая ячейка указывает на целевую позицию
             Nodes[freeIndex].Next = position.Posit;
 
-            // Если вставляем в начало
-            if (previousIndex == -1)
-            {
-                _start.Posit = freeIndex;
-            }
-            else
-            {
-                // Предыдущий элемент теперь указывает на новую ячейку
-                Nodes[previousIndex].Next = freeIndex;
-            }
-
-            _space.Posit = nextFree;
-
-            // Если список был пустой
-            if (_start.Posit == -1)
-            {
-                _start.Posit = freeIndex;
+            if (previousIndex == -1) {
+                _start.Posit = freeIndex; // вставка в начало
+            } else {
+                Nodes[previousIndex].Next = freeIndex; // вставка в середину
             }
         }
-        else
-        {
-            throw new Exception("Неверная позиция для вставки!");
-        }
-        // Вставка в начало списка
-        // else if (position.Posit == First().Posit)
-        // {
-        //     if (_space.Posit == -1)
-        //         throw new Exception("Нет свободного места в списке!");
-
-        //     int freeIndex = _space.Posit;
-        //     int nextFree = Nodes[freeIndex].Next;
-
-        //     // Копируем текущий первый элемент в свободную ячейку
-        //     Nodes[freeIndex].Value = Nodes[position.Posit].Value;
-        //     Nodes[freeIndex].Next = Nodes[position.Posit].Next;
-
-        //     // В старую первую ячейку записываем новый элемент
-        //     Nodes[position.Posit].Value = item;
-        //     Nodes[position.Posit].Next = freeIndex;
-
-        //     // Обновляем _space
-        //     _space.Posit = nextFree;
-
-        //     // Если это была первая вставка (список был пустой)
-        //     if (_start.Posit == -1)
-        //     {
-        //         _start.Posit = position.Posit;
-        //     }
-        // }
-        // Вставка в ЛЮБУЮ позицию (начало, середину)
+        
+        _space = nextFree;
     }
-    
+        
     /// <summary>
     /// Находит позицию первого вхождения элемента в списке
     /// </summary>
@@ -154,14 +102,16 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Позиция элемента или End() если не найден</returns>
     public Position Locate(T item)
     {
+        if (item == null)
+            throw new ArgumentNullException(nameof(item), "Элемент не может быть null");
         int current = _start.Posit;
         while (current != -1)
         {
-            if (Nodes[current].Value.Equals(item))
+            if (Nodes[current].Value!.Equals(item))
                 return new Position(current);
             current = Nodes[current].Next;
         }
-        return _end;  // элемент не найден
+        return End();  // элемент не найден
     }
     
     /// <summary>
@@ -172,10 +122,13 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если позиция неверная или равна End()</exception>
     public T Retrieve(Position position)
     {
-        if (position.Posit == _end.Posit || !CheckPosition(position.Posit))
+        if (position.Posit == End().Posit)
             throw new Exception("Неверная позиция!");
 
-        return Nodes[position.Posit].Value;
+        if (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1)
+            throw new Exception("Неверная позиция!");
+
+        return Nodes[position.Posit].Value!;
     }
 
     /// <summary>
@@ -185,44 +138,37 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если позиция неверная</exception>
     public void Delete(Position position)
     {
-        if (position.Posit < 0) throw new Exception("Данная позиция отсутствует в списке");
+        if (position.Posit == End().Posit || 
+            (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1))
+        {
+            Console.WriteLine("Позиция не существует в списке");
+            return;
+        }
+
         int tmp;
 
         // Удаляем первый элемент
         if (position.Posit == _start.Posit)
         {
-            tmp = _space.Posit;
-            _space = _start; // освободили ячейку
-            _start = new Position(Nodes[_start.Posit].Next); // новый старт
-            Nodes[_space.Posit].Next = tmp;  // добавляем освободившуюся ячейку в список свободных
-
+            tmp = _space;
+            _space = position.Posit;
+            _start = new Position(Nodes[_start.Posit].Next);
+            Nodes[_space].Next = tmp;
             return;
         }
 
-
+        // Для остальных случаев GetPrevious() уже гарантированно найдет предыдущий
         int prev = GetPrevious(position.Posit);
-        if (prev == -1) throw new Exception("Данная позиция отсутствует в списке");
-
+        
         // Обновляем ссылку предыдущего элемента
         Nodes[prev].Next = Nodes[position.Posit].Next;
 
         // Добавляем освободившуюся ячейку в список свободных
-        tmp = _space.Posit;
-        _space.Posit = position.Posit;
-        Nodes[_space.Posit].Next = tmp;
-        // Удаляем не первый элемент
-        // int prev = GetPrevious(position.Posit);
-        // if (prev == -1) throw new Exception("Данная позиция отсутствует в списке");
-
-        // int current = Nodes[prev].Next;
-        // Nodes[prev].Next = Nodes[current].Next;  // исключаем элемент из цепочки
-
-        // tmp = _space.Posit;
-        // _space = new Position(current);  // освобождаем ячейку
-
-        // Nodes[_space.Posit].Next = tmp;  // добавляем в список свободных
+        tmp = _space;
+        _space = position.Posit;
+        Nodes[_space].Next = tmp;
     }
-    
+
     /// <summary>
     /// Возвращает позицию следующего элемента после указанной позиции
     /// </summary>
@@ -231,8 +177,12 @@ public class List<T> where T : IEquatable<T>
     public Position Next(Position position)
     {
         if (position.Posit == End().Posit)
+            return new Position(-1);
+
+        if (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1)
         {
-            return new Position(-1);  // после End() нет следующего
+            Console.WriteLine("Неверная позиция для получения следующего элемента");
+            return End();
         }
 
         return new Position(Nodes[position.Posit].Next);
@@ -244,14 +194,12 @@ public class List<T> where T : IEquatable<T>
     public void Makenull()
     {
         if (IsEmpty())
-        {
             return;
-        }
-
+        
         // Соединяем конец списка данных с началом свободных ячеек
-        Nodes[LastPos()].Next = _space.Posit;
+        Nodes[LastPos()].Next = _space;
         // Все ячейки списка становятся свободными
-        _space = _start;
+        _space = _start.Posit;
         // Список становится пустым
         _start = new Position(-1);
     }
@@ -262,7 +210,32 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Позиция первого элемента или End() если список пуст</returns>
     public Position First()
     {
-        return IsEmpty() ? _end : new Position(_start.Posit);
+        return IsEmpty() ? End() : new Position(_start.Posit);
+    }
+
+    /// <summary>
+    /// Возвращает индекс элемента в списке (0-based)
+    /// </summary>
+    /// <param name="item">Элемент для поиска</param>
+    /// <returns>Индекс элемента или -1 если не найден</returns>
+    public int IndexOf(T item)
+    {
+        if (item == null)
+            throw new ArgumentNullException(nameof(item));
+
+        int current = _start.Posit;
+        int index = 0;
+
+        while (current != -1)
+        {
+            if (Nodes[current].Value!.Equals(item))
+                return index;
+
+            current = Nodes[current].Next;
+            index++;
+        }
+
+        return -1; // элемент не найден
     }
 
     /// <summary>
@@ -270,7 +243,7 @@ public class List<T> where T : IEquatable<T>
     /// </summary>
     public void PrintList()
     {
-        if (_start.Posit == -1)
+        if (IsEmpty())
         {
             Console.WriteLine("Список пуст");
             return;
@@ -280,11 +253,6 @@ public class List<T> where T : IEquatable<T>
 
         while (cur != -1)
         {
-            if (cur < 0 || cur >= Nodes.Length)
-            {
-                throw new Exception($"Invalid position index: {cur}");
-            }
-
             Console.WriteLine(Nodes[cur].Value?.ToString() ?? "null");
 
             int nextIndex = Nodes[cur].Next;
@@ -321,21 +289,6 @@ public class List<T> where T : IEquatable<T>
         return _start.Posit == -1;
     }
 
-    /// <summary>
-    /// Находит индекс последнего элемента (аналогично LastPos)
-    /// </summary>
-    /// <returns>Индекс последнего элемента</returns>
-    private int FindLastIndex()
-    {
-        if (_start.Posit == -1) return -1;
-
-        int current = _start.Posit;
-        while (Nodes[current].Next != -1)
-        {
-            current = Nodes[current].Next;
-        }
-        return current;
-    }
 
     /// <summary>
     /// Находит индекс предыдущего элемента относительно указанного
@@ -348,27 +301,11 @@ public class List<T> where T : IEquatable<T>
         int previous = -1;
         while (current != -1)
         {
-            if (current == index) return previous;
+            if (current == index) 
+                return previous;
             previous = current;
             current = Nodes[current].Next;
         }
         return -1;
-    }
-    
-    /// <summary>
-    /// Проверяет, существует ли позиция в списке
-    /// </summary>
-    /// <param name="index">Индекс для проверки</param>
-    /// <returns>true если позиция существует, иначе false</returns>
-    private bool CheckPosition(int index)
-    {
-        if (index == _end.Posit) return false;  // End() не считается валидной позицией для операций
-        int current = _start.Posit;
-        while (current != -1)
-        {
-            if (current == index) return true;
-            current = Nodes[current].Next;
-        }
-        return false;
     }
 }

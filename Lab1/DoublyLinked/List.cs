@@ -1,10 +1,10 @@
 namespace Lab1.DoublyLinked;
 
-public class List<T> where T : IEquatable<T>
+public class List<T>
 {
     private Node<T>? _head;
     private Node<T>? _tail;
-    private readonly Position<T> _end = new Position<T>(null);
+    // private readonly Position<T> _end = new Position<T>(null);
 
     /// <summary>
     /// Возвращает позицию после последнего элемента списка
@@ -12,7 +12,7 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Позиция конца списка</returns>
     public Position<T> End()
     {
-        return _end;
+        return new Position<T>(null);
     }
 
     /// <summary>
@@ -24,50 +24,54 @@ public class List<T> where T : IEquatable<T>
     public void Insert(T item, Position<T> position)
     {
         Node<T> newNode = new Node<T> { Value = item };
+
+        // 1. Вставка в конец
         if (position.Posit == End().Posit)
         {
-            if (_tail == null)
+            if (IsEmpty())
             {
-                _tail = newNode;
-                _head = newNode;
+                // Случай: пустой список
+                _head = _tail = newNode;
             }
             else
             {
+                // Случай: непустой список - добавляем после tail
                 newNode.Previous = _tail;
-                _tail.Next = newNode;
+                _tail!.Next = newNode;
                 _tail = newNode;
             }
         }
-        else if (position.Posit == First().Posit)
-        {
-            if (_head == null)
-            {
-                _tail = newNode;
-                _head = newNode;
-            }
-            else
-            {
-                newNode.Next = _head;
-                _head.Previous = newNode;
-                _head = newNode;
-            }
-        }
+        // 2. Вставка в начало или середину
         else if (CheckPosition(position))
         {
-            Node<T> previousNode = newNode.Previous!;
-            Node<T> nextNode = newNode.Next!;
+            Node<T> currentNode = position.Posit!;
 
+            // Случай: вставка перед первым элементом
+            if (currentNode == _head)
+            {
+                newNode.Next = _head;
+                _head!.Previous = newNode;
+                _head = newNode;
+            }
+            // Случай: вставка в середину
+            else
+            {
+                Node<T> previousNode = currentNode.Previous!;
 
+                newNode.Previous = previousNode;
+                newNode.Next = currentNode;
 
-            previousNode.Next = newNode;
-            nextNode.Previous = newNode;
+                previousNode.Next = newNode;
+                currentNode.Previous = newNode;
+            }
         }
         else
         {
-            throw new Exception("Позиция неверная для вставки!");
+            Console.WriteLine("Неверная позиция для вставки");
+            return;
         }
     }
-
+        
     /// <summary>
     /// Находит позицию первого вхождения элемента в списке
     /// </summary>
@@ -82,7 +86,7 @@ public class List<T> where T : IEquatable<T>
                 return new Position<T>(current);
             current = current.Next;
         }
-        return _end;  // элемент не найден
+        return End();  // элемент не найден
     }
 
     /// <summary>
@@ -93,8 +97,10 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если позиция неверная или равна End()</exception>
     public T Retrieve(Position<T> position)
     {
-        if (position.Posit == _end.Posit)
-            throw new Exception("Неверная позиция!");
+        if (!CheckPosition(position))
+        {
+            throw new Exception("Неверная позиция для получения элемента");
+        }
 
         return position.Posit!.Value!;
     }
@@ -106,33 +112,40 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если позиция неверная</exception>
     public void Delete(Position<T> position)
     {
-        if (position.Posit == null) throw new Exception("Данная позиция отсутствует в списке");
-
-        // Удаляем первый элемент
-        if (position.Posit == _head)
+        if (!CheckPosition(position)) 
+        {
+            Console.WriteLine("Неверная позиция для удаления");
+            return;
+        }
+            
+        Node<T> nodeToDelete = position.Posit!;
+        
+        // Случай: один элемент в списке (head == tail)
+        if (_head == _tail)
+        {
+            _head = _tail = null;
+            return;
+        }
+        
+        // Случай: удаляем первый элемент
+        if (nodeToDelete == _head)
         {
             _head = _head!.Next;
-            if (_head != null)
-                _head.Previous = null;
-            else
-                _tail = null;  // если список стал пустым
+            _head!.Previous = null;
             return;
         }
-
-        // Удаляем последний элемент
-        if (position.Posit == _tail)
+        
+        // Случай: удаляем последний элемент  
+        if (nodeToDelete == _tail)
         {
             _tail = _tail!.Previous;
-            if (_tail != null)
-                _tail.Next = null;
-            else
-                _head = null;  // если список стал пустым
+            _tail!.Next = null;
             return;
         }
-
-        // Удаляем из середины
-        position.Posit.Previous!.Next = position.Posit.Next;
-        position.Posit.Next!.Previous = position.Posit.Previous;
+        
+        // Случай: удаляем из середины
+        nodeToDelete.Previous!.Next = nodeToDelete.Next;
+        nodeToDelete.Next!.Previous = nodeToDelete.Previous;
     }
 
     /// <summary>
@@ -142,17 +155,11 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Следующая позиция или End() если текущая последняя</returns>
     public Position<T> Next(Position<T> position)
     {
-        if (position.Posit == End().Posit)
-        {
-            return new Position<T>(null);  // после End() нет следующего
-        }
-
-        if (position.Posit == null)
-        {
-            throw new Exception("Позиция нулевая");
-        }
-
-        return position.Posit == _tail ? _end : new Position<T>(position.Posit.Next);
+        if (!CheckPosition(position))
+            throw new ArgumentException("Invalid position");
+        
+        // Если следующий элемент null - возвращаем End()
+        return position.Posit!.Next == null ? End() : new Position<T>(position.Posit.Next);
     }
 
     /// <summary>
@@ -174,7 +181,7 @@ public class List<T> where T : IEquatable<T>
     /// <returns>Позиция первого элемента или End() если список пуст</returns>
     public Position<T> First()
     {
-        return IsEmpty() ? _end : new Position<T>(_head);
+        return IsEmpty() ? End() : new Position<T>(_head);
     }
 
     /// <summary>
@@ -182,28 +189,45 @@ public class List<T> where T : IEquatable<T>
     /// </summary>
     public void PrintList()
     {
-        if (_head == null)
+        if (IsEmpty())
         {
             Console.WriteLine("Список пуст");
             return;
         }
 
         Node<T>? current = _head;
-        while (current!= null)
+        while (current != null)
         {
-            if (current == null)
-            {
-                throw new Exception($"Invalid position index: {current}");
-            }
-
             Console.WriteLine(current.Value?.ToString() ?? "null");
-
             current = current.Next;
         }
-
         Console.WriteLine();
     }
 
+    /// <summary>
+    /// Возвращает индекс элемента в списке (0-based)
+    /// </summary>
+    /// <param name="item">Элемент для поиска</param>
+    /// <returns>Индекс элемента или -1 если не найден</returns>
+    public int IndexOf(T item)
+    {
+        if (item == null)
+            throw new ArgumentNullException(nameof(item));
+
+        Node<T>? current = _head;
+        int index = 0;
+
+        while (current != null)
+        {
+            if (current.Value!.Equals(item))
+                return index;
+
+            current = current.Next;
+            index++;
+        }
+
+        return -1; // элемент не найден
+    }
 
     /// <summary>
     /// Возвращает позицию предыдущего элемента перед указанной позицией
@@ -213,11 +237,19 @@ public class List<T> where T : IEquatable<T>
     /// <exception cref="Exception">Если позиция неверная или это первый элемент</exception>
     public Position<T> Previous(Position<T> position)
     {
-        // Node<T>? prev;
-        if (position.Posit == _head || position.Posit == null)
-            throw new Exception("Позиции нет в списке");
-
-        return new Position<T>(position.Posit.Previous);
+        if (!CheckPosition(position))
+        {
+            Console.WriteLine("Неверная позиция");
+            return End();
+        }
+        
+        if (position.Posit == _head)
+        {
+            Console.WriteLine("Первый элемент не имеет предыдущего");
+            return End();
+        }
+        
+        return new Position<T>(position.Posit!.Previous);
     }
 
     //=== ВСПОМОГАТЕЛЬНЫЕ ПРИВАТНЫЕ МЕТОДЫ ===

@@ -3,11 +3,11 @@
 using Lab1.Cursor;
 using Lab1.DoublyLinked;
 // -----Cursor-----
-using SomeList = Cursor.List<Addressee>;
-using SomePosition = Lab1.Cursor.Position;
+// using SomeList = Cursor.List<Addressee>;
+// using SomePosition = Lab1.Cursor.Position;
 // -----DoublyLinked-----
-// using SomeList = DoublyLinked.List<Addressee>;
-// using SomePosition = Lab1.DoublyLinked.Position<Addressee>;
+using SomeList = DoublyLinked.List<Addressee>;
+using SomePosition = Lab1.DoublyLinked.Position<Addressee>;
 
 public class Program
 {
@@ -15,7 +15,13 @@ public class Program
     {
         SomeList list = new SomeList();
         WriteInList(list);
+        SomeList list2 = new SomeList();
+        WriteInList2(list2);
+        SomeList list3 = new SomeList();
+        WriteInList3(list3);
         list.PrintList();
+        list2.PrintList();
+        list3.PrintList();
 
         DeleteDuplicates(list);
         list.PrintList();
@@ -29,10 +35,10 @@ public class Program
         list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
         list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), list.End());
 
-        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), new SomePosition(3)); // Для курсора
+        // list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), new SomePosition(3)); // Для курсора
 
-        // SomePosition savinPos = list.Locate(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7")); // Для двусвязнного связного списка
-        // list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), savinPos);
+        SomePosition savinPos = list.Locate(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7")); // Для двусвязнного связного списка
+        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), savinPos);
 
         list.Insert(new Addressee("Елена Васнецова", "Казань, ул. Баумана 10"), list.End());
         list.Insert(new Addressee("Анна Ковалева", "Москва, ул. Пушкина 15"), list.End());  // дубликат
@@ -42,6 +48,27 @@ public class Program
         list.Insert(new Addressee("Ольга Новикова", "Новосибирск, Красный пр. 12"), list.End());
         list.Insert(new Addressee("Андрей Миронов", "Санкт-Петербург, пр. Кронверкский 49"), list.End()); // дубликат
     }
+
+    public static void WriteInList2(SomeList list)
+    {
+        list.Insert(new Addressee("Анна Ковалева", "Москва, ул. Пушкина 15"), list.End());
+        list.Insert(new Addressee("Андрей Миронов", "Санкт-Петербург, пр. Кронверкский 49"), list.End());
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.First()); // first
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
+        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), list.End());
+    }
+
+    public static void WriteInList3(SomeList list)
+    {
+        list.Insert(new Addressee("Анна Ковалева", "Москва, ул. Пушкина 15"), list.End());
+        list.Insert(new Addressee("Андрей Миронов", "Санкт-Петербург, пр. Кронверкский 49"), list.End());
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.First()); // first
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
+        list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
+        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), list.End());
+    }
+
 
     public static void DeleteDuplicates(SomeList list)
     {
@@ -62,7 +89,7 @@ public class Program
             
             while (search.Posit != list.End().Posit)
             {
-                // 🔥 ВАЖНО: сохраняем следующую позицию ДО сравнения и возможного удаления
+                // Сохраняем следующую позицию ДО сравнения и возможного удаления
                 SomePosition nextSearch = list.Next(search);
                 
                 try
@@ -80,7 +107,7 @@ public class Program
                     break;
                 }
                 
-                // 🔥 Переходим к ЗАРАНЕЕ сохраненной следующей позиции
+                // Переходим к ЗАРАНЕЕ сохраненной следующей позиции
                 search = nextSearch;
             }
 
