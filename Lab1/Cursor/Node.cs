@@ -6,10 +6,4 @@ public class Node<T>
     public int Next { get; set; }
 
     public Node(){}
-    public Node(T? value, int next)
-    {
-        Value = value;
-        Next = next;
-    }
-
 }

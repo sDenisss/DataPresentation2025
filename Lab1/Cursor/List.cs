@@ -1,6 +1,8 @@
+using Lab1.Interfaces;
+
 namespace Lab1.Cursor;
 
-public class List<T>
+public class List<T> : IList<T, Position>
 {
     // Статический массив всех узлов - общий для всех экземпляров списка
     private static readonly Node<T>[] Nodes;
@@ -57,7 +59,7 @@ public class List<T>
         
         // Проверка валидности позиции
         if (position.Posit != End().Posit && 
-            GetPrevious(position.Posit) == -1 && 
+            Previous(position) == new Position(-1) && 
             position.Posit != _start.Posit)
         {
              Console.WriteLine("Неверная позиция для вставки");
@@ -80,15 +82,15 @@ public class List<T>
         }
         else {
             // Вставка в начало/середину через GetPrevious()
-            int previousIndex = GetPrevious(position.Posit);
+            Position previousIndex = Previous(position);
 
             Nodes[freeIndex].Value = item;
             Nodes[freeIndex].Next = position.Posit;
 
-            if (previousIndex == -1) {
+            if (previousIndex.Posit == -1) {
                 _start.Posit = freeIndex; // вставка в начало
             } else {
-                Nodes[previousIndex].Next = freeIndex; // вставка в середину
+                Nodes[previousIndex.Posit].Next = freeIndex; // вставка в середину
             }
         }
         
@@ -125,7 +127,7 @@ public class List<T>
         if (position.Posit == End().Posit)
             throw new Exception("Неверная позиция!");
 
-        if (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1)
+        if (position.Posit != _start.Posit && Previous(position) == new Position(-1))
             throw new Exception("Неверная позиция!");
 
         return Nodes[position.Posit].Value!;
@@ -139,7 +141,7 @@ public class List<T>
     public void Delete(Position position)
     {
         if (position.Posit == End().Posit || 
-            (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1))
+            (position.Posit != _start.Posit && Previous(position) == new Position(-1)))
         {
             Console.WriteLine("Позиция не существует в списке");
             return;
@@ -158,10 +160,10 @@ public class List<T>
         }
 
         // Для остальных случаев GetPrevious() уже гарантированно найдет предыдущий
-        int prev = GetPrevious(position.Posit);
+        Position prev = Previous(position);
         
         // Обновляем ссылку предыдущего элемента
-        Nodes[prev].Next = Nodes[position.Posit].Next;
+        Nodes[prev.Posit].Next = Nodes[position.Posit].Next;
 
         // Добавляем освободившуюся ячейку в список свободных
         tmp = _space;
@@ -179,7 +181,7 @@ public class List<T>
         if (position.Posit == End().Posit)
             return new Position(-1);
 
-        if (position.Posit != _start.Posit && GetPrevious(position.Posit) == -1)
+        if (position.Posit != _start.Posit && Previous(position) == new Position(-1))
         {
             Console.WriteLine("Неверная позиция для получения следующего элемента");
             return End();
@@ -290,22 +292,56 @@ public class List<T>
     }
 
 
+    // /// <summary>
+    // /// Находит индекс предыдущего элемента относительно указанного
+    // /// </summary>
+    // /// <param name="index">Индекс текущего элемента</param>
+    // /// <returns>Индекс предыдущего элемента или -1 если не найден</returns>
+    // private int GetPrevious(int index)
+    // {
+    //     int current = _start.Posit;
+    //     int previous = -1;
+    //     while (current != -1)
+    //     {
+    //         if (current == index) 
+    //             return previous;
+    //         previous = current;
+    //         current = Nodes[current].Next;
+    //     }
+    //     return -1;
+    // }
+
     /// <summary>
-    /// Находит индекс предыдущего элемента относительно указанного
+    /// Возвращает предыдущую позицию перед указанной позицией
     /// </summary>
-    /// <param name="index">Индекс текущего элемента</param>
-    /// <returns>Индекс предыдущего элемента или -1 если не найден</returns>
-    private int GetPrevious(int index)
+    /// <param name="position">Текущая позиция</param>
+    /// <returns>Предыдущая позиция или позиция -1 если предыдущего нет</returns>
+    public Position Previous(Position position)
     {
+        if (position.Posit == -1)
+        {
+            throw new InvalidOperationException("Cannot get previous for end position");
+        }
+
+        if (position.Posit == _start.Posit)
+        {
+            // Первый элемент не имеет предыдущего
+            return new Position(-1);
+        }
+
         int current = _start.Posit;
         int previous = -1;
+
         while (current != -1)
         {
-            if (current == index) 
-                return previous;
+            if (current == position.Posit)
+            {
+                return new Position(previous);
+            }
             previous = current;
             current = Nodes[current].Next;
         }
-        return -1;
+
+        throw new InvalidOperationException("Position not found in list");
     }
 }

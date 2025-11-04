@@ -6,10 +6,4 @@ public class Node<T>
     public Node<T>? Previous { get; set; }
 
     public Node() { }
-    public Node(T? value, Node<T> next, Node<T> previous)
-    {
-        Value = value;
-        Next = next;
-        Previous = previous;
-    }
 }

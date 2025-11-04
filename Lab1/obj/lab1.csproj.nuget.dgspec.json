@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\University\\Programming\\DataPresentation\\Lab1\\lab1.csproj": {}
+    "C:\\University\\Programming\\DataPresentation\\Lab1\\Lab1.csproj": {}
   },
   "projects": {
-    "C:\\University\\Programming\\DataPresentation\\Lab1\\lab1.csproj": {
+    "C:\\University\\Programming\\DataPresentation\\Lab1\\Lab1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\University\\Programming\\DataPresentation\\Lab1\\lab1.csproj",
-        "projectName": "lab1",
-        "projectPath": "C:\\University\\Programming\\DataPresentation\\Lab1\\lab1.csproj",
+        "projectUniqueName": "C:\\University\\Programming\\DataPresentation\\Lab1\\Lab1.csproj",
+        "projectName": "Lab1",
+        "projectPath": "C:\\University\\Programming\\DataPresentation\\Lab1\\Lab1.csproj",
         "packagesPath": "C:\\Users\\ddeni\\.nuget\\packages\\",
         "outputPath": "C:\\University\\Programming\\DataPresentation\\Lab1\\obj\\",
         "projectStyle": "PackageReference",

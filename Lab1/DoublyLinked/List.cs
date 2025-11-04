@@ -1,6 +1,8 @@
+using Lab1.Interfaces;
+
 namespace Lab1.DoublyLinked;
 
-public class List<T>
+public class List<T> : IList<T, Position<T>>
 {
     private Node<T>? _head;
     private Node<T>? _tail;
@@ -280,4 +282,5 @@ public class List<T>
         }
         return false;
     }
+
 }

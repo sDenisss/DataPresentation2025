@@ -3,11 +3,11 @@
 using Lab1.Cursor;
 using Lab1.DoublyLinked;
 // -----Cursor-----
-// using SomeList = Cursor.List<Addressee>;
-// using SomePosition = Lab1.Cursor.Position;
+using SomeList = Cursor.List<Addressee>;
+using SomePosition = Lab1.Cursor.Position;
 // -----DoublyLinked-----
-using SomeList = DoublyLinked.List<Addressee>;
-using SomePosition = Lab1.DoublyLinked.Position<Addressee>;
+// using SomeList = DoublyLinked.List<Addressee>;
+// using SomePosition = Lab1.DoublyLinked.Position<Addressee>;
 
 public class Program
 {
@@ -35,10 +35,10 @@ public class Program
         list.Insert(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7"), list.End()); // дубликат
         list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), list.End());
 
-        // list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), new SomePosition(3)); // Для курсора
+        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), new SomePosition(3)); // Для курсора
 
-        SomePosition savinPos = list.Locate(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7")); // Для двусвязнного связного списка
-        list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), savinPos);
+        // SomePosition savinPos = list.Locate(new Addressee("Савин Денис", "Санкт-Петербург, пер. Вяземский 5-7")); // Для двусвязнного связного списка
+        // list.Insert(new Addressee("Дмитрий Соколов", "Санкт-Петербург, Невский пр. 25"), savinPos);
 
         list.Insert(new Addressee("Елена Васнецова", "Казань, ул. Баумана 10"), list.End());
         list.Insert(new Addressee("Анна Ковалева", "Москва, ул. Пушкина 15"), list.End());  // дубликат
