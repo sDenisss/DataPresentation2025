@@ -4,58 +4,47 @@ namespace Lab2.Queue.Array;
 
 public class Queue<T> : IQueue<T>
 {
-    private const int _capacity = 52;
-    private T[] _array = new T[_capacity];
-    private int _first = 0;
-    private int _last = _capacity -1;
+    private const int _capacity = 52;           // Фиксированная емкость
+    private T[] _array = new T[_capacity];     // Основной массив
+    private int _first = 0;                    // Индекс начала очереди
+    private int _last = _capacity - 1;         // Индекс конца очереди
 
     public T Dequeue()
     {
-        T item = _array[_first];
-        _first = Next(_first);
-
+        T item = _array[_first];               // Получение элемента
+        _first = Next(_first);                 // Сдвиг начала
         return item;
     }
 
-
     public bool Empty()
     {
-        return _first == Next(_last);
+        return _first == Next(_last);          // Очередь пуста
     }
 
     public void Enqueue(T x)
     {
-        // if (Empty())
-        // {
-        //     _first = _last = 0;
-        // }
-        // else
-        // {
-        _last = (_last + 1) % _capacity; // двигаем хвост по кругу
-        // }
-        _array[_last] = x;
+        _last = (_last + 1) % _capacity;      // Циклическое увеличение
+        _array[_last] = x;                     // Запись элемента
     }
 
     public T Front()
     {
-        // if (Empty())
-        //     throw new InvalidOperationException("Queue is empty");
-        return _array[_first];
+        return _array[_first];                 // Элемент в начале
     }
 
     public bool Full()
     {
-        return Next(Next(_last)) == _first;
+        return Next(Next(_last)) == _first;    // Очередь заполнена
     }
 
     public void MakeNull()
     {
-        _last = _capacity-1;
+        _last = _capacity - 1;                 // Сброс указателей
         _first = 0;
     }
 
     private int Next(int pos)
     {
-        return (pos + 1) % _capacity;
+        return (pos + 1) % _capacity;         // Следующая позиция
     }
 }

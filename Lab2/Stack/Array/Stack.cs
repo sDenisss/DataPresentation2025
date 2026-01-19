@@ -4,64 +4,38 @@ namespace Lab2.Stack.Array;
 
 public class Stack<T> : IStack<T>
 {
-    // Внутренний массив для хранения элементов стека
-    private const int _capacity = 52; // Вместимость стека (фиксированный размер)
-    private T[] _array = new T[_capacity]; // Массив элементов стека
-    private int _last = -1; // Индекс верхнего элемента стека (-1 означает пустой стек)
+    private const int _capacity = 52;        // Максимальный размер
+    private T[] _array = new T[_capacity];  // Хранилище элементов
+    private int _last = -1;                  // Индекс вершины (-1 = пусто)
 
-    /// <summary>
-    /// Проверяет, является ли стек пустым
-    /// </summary>
-    /// <returns>true - если стек пустой, false - если содержит элементы</returns>
     public bool Empty()
     {
-        return _last == -1; // Стек пуст, когда _last равен -1
+        return _last == -1;                  // Проверка на пустоту
     }
 
-    /// <summary>
-    /// Проверяет, является ли стек полным
-    /// </summary>
-    /// <returns>true - если стек полный, false - если есть свободное место</returns>
     public bool Full()
     {
-        return _last == _capacity - 1; // Стек полон, когда _last достиг максимального индекса
+        return _last == _capacity - 1;       // Проверка на заполненность
     }
 
-    /// <summary>
-    /// Очищает стек, удаляя все элементы
-    /// </summary>
     public void MakeNull()
     {
-        _last = -1; // Сбрасываем указатель на пустое состояние
+        _last = -1;                          // Сброс указателя
     }
 
-    /// <summary>
-    /// Извлекает верхний элемент из стека
-    /// </summary>
-    /// <returns>Извлеченный элемент</returns>
     public T Pop()
     {
-        T item = _array[_last--]; // Сохраняем элемент для возврата и уменьшаем указатель вершины
-        return item; // Возвращаем сохраненный элемент
+        T item = _array[_last--];            // Получение и уменьшение указателя
+        return item;
     }
 
-    /// <summary>
-    /// Добавляет элемент на вершину стека
-    /// </summary>
-    /// <param name="x">Элемент для добавления</param>
     public void Push(T x)
     {
-        _array[++_last] = x; // Увеличиваем _last и добавляем элемент
+        _array[++_last] = x;                 // Увеличение указателя и запись
     }
 
-    /// <summary>
-    /// Возвращает верхний элемент стека без его удаления
-    /// </summary>
-    /// <returns>Верхний элемент стека</returns>
     public T Top()
     {
-        // if (Empty()) throw new InvalidOperationException("Stack is empty");
-        
-        return _array[_last]; // Возвращаем элемент с вершины
+        return _array[_last];                // Элемент на вершине
     }
 }

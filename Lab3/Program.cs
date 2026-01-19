@@ -26,7 +26,7 @@ public class Program
         Console.WriteLine("После добавления:");
         Question("Den");  // Good
         Question("Some bad guy");  // Bad
-        Question("Неизвестный");  // Хз
+        Question("Неизвестный");  // Неизвестый
         
         Console.WriteLine();
 
@@ -91,7 +91,7 @@ public class Program
         
         Console.WriteLine("После очистки:");
         P();
-        Question("Den");  // Должен быть "хз где он" после очистки
+        Question("Den");  // Должен быть "Не найден" после очистки
         
         Console.WriteLine("\n=== ТЕСТ ЗАВЕРШЕН ===");
     }
@@ -112,7 +112,7 @@ public class Program
         else if (badguys.Member(ToCharArray(name)))
             Console.WriteLine("законодатель плохой человек");
         else
-            Console.WriteLine("хз где он");
+            Console.WriteLine("Не найден");
     }
 
     private void P()

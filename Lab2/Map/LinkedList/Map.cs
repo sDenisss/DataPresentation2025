@@ -3,152 +3,114 @@ using Lab2.Map.Interfaces;
 
 namespace Lab2.Map.LinkedList
 {
-    // Класс Map реализует интерфейс IMap для работы с ключами и значениями типа char[]
-    // TKey и TValue - обобщенные параметры, хотя в данной реализации не используются
+    // Реализация Map на связном списке
     public class Map<TKey, TValue> : IMap<char[], char[]>
     {
-        private Node<TKey, TValue>? _head;  // Голова связного списка
+        private Node<TKey, TValue>? _head;  // Голова списка
 
-        // Статический метод для сравнения двух массивов char
-        // Сравнение происходит до терминального символа '\0'
+        // Сравнение двух массивов char до '\0'
         private static bool CompareCharArrays(char[] a1, char[] a2)
         {
-            int len = Math.Min(a1.Length, a2.Length);  // Определяем минимальную длину
-
-            // Поэлементное сравнение
+            int len = Math.Min(a1.Length, a2.Length);  // Минимальная длина
+            
             for (int i = 0; i < len; i++)
             {
-                // Если оба массива достигли конца строки
+                // Оба достигли конца строки
                 if (a1[i] == '\0' && a2[i] == '\0')
                     return true;
-
-                // Если символы не совпадают
+                
+                // Символы не совпадают
                 if (a1[i] != a2[i])
                     return false;
             }
             
-            // Если дошли до конца без различий
-            return true;
+            return true;  // Различий нет
         }
 
-        // Реализация метода Assign из интерфейса IMap
-        // Добавляет новую пару ключ-значение или обновляет существующую
+        // Добавление/обновление пары ключ-значение
         public void Assign(char[] name, char[] address)
         {
-            // Если список пуст, создаем первый узел
+            // Создание первого узла
             if (_head == null)
             {
                 _head = new Node<TKey, TValue>(name, address, null!);
                 return;
             }
 
-            // Ищем узел с таким ключом
+            // Поиск существующего ключа
             (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) = FindViaKey(name);
 
-            // Если узел найден - обновляем значение
+            // Обновление значения
             if (node != null)
             {
-                // создаем новый LetterObject вместо изменения старого массива!
                 node.Data = new Addressee(name, address);
                 return;
             }
 
-            // Если узел не найден - добавляем новый в начало списка
+            // Добавление нового узла в начало
             _head = new Node<TKey, TValue>(name, address, _head);
         }
 
-        // Реализация метода Compute из интерфейса IMap
-        // Ищет значение по ключу и возвращает через out-параметр
+        // Получение значения по ключу
         public bool Compute(char[] name, out char[] address)
         {
-            // Создаем массив для результата заданного размера
-            address = new char[Addressee.ADDRESS_CAPACITY];
+            address = new char[Addressee.ADDRESS_CAPACITY];  // Массив для результата
             
-            // Ищем узел по ключу
             (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) = FindViaKey(name);
 
-            // Если узел не найден
+            // Ключ не найден
             if (node == null)
             {
-                address = Array.Empty<char>();  // Возвращаем пустой массив
+                address = Array.Empty<char>();
                 return false;
             }
 
-            // Копируем адрес из найденного узла в выходной массив
+            // Копирование адреса в выходной массив
             char[] nodeAddress = node.Data.GetAddress();
             for (int i = 0; i < nodeAddress.Length && i < address.Length; i++)
             {
-                if (nodeAddress[i] == '\0') break;  // Прерываем на терминальном символе
-                address[i] = nodeAddress[i];        // Копируем символ
+                if (nodeAddress[i] == '\0') break;  // Конец строки
+                address[i] = nodeAddress[i];        // Копирование символа
             }
 
-            return true;  // Успешно нашли
+            return true;  // Успешное получение
         }
 
-        // Реализация метода MakeNull из интерфейса IMap
-        // Очищает весь словарь
+        // Очистка словаря
         public void MakeNull()
         {
-            _head = null;  // Удаляем ссылку на голову списка
+            _head = null;  // Удаление ссылки на список
         }
 
-        // Реализация метода Print из интерфейса IMap
-        // Выводит все элементы словаря в консоль
+        // Вывод всех элементов
         public void Print()
         {
-            Node<TKey, TValue>? current = _head;  // Начинаем с головы
+            Node<TKey, TValue>? current = _head;  // Начало списка
             
-            // Проходим по всем узлам
             while (current != null)
             {
-                current.Data.Print();       // Печатаем данные узла
-                current = current.Next;     // Переходим к следующему
+                current.Data.Print();       // Печать данных узла
+                current = current.Next;     // Следующий узел
             }
         }
 
-        // Дополнительный метод для обратной совместимости
-        // Принимает массив для заполнения результатом (ref-like семантика)
-
-        // Метод для поиска узла по ключу
-        // Возвращает кортеж: найденный узел и предыдущий узел
+        // Поиск узла по ключу
         private (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) FindViaKey(char[] key)
         {
-            Node<TKey, TValue>? current = _head;  // Начинаем с головы списка
-            Node<TKey, TValue>? prev = null;      // Предыдущий узел изначально null
+            Node<TKey, TValue>? current = _head;  // Текущий узел
+            Node<TKey, TValue>? prev = null;      // Предыдущий узел
 
-            // Проходим по всем узлам списка
             while (current != null)
             {
-                // Если ключи совпадают - возвращаем текущий узел
+                // Ключи совпадают
                 if (CompareCharArrays(current.Data.GetName(), key))
                     return (current, prev);
 
-                prev = current;           // Обновляем предыдущий узел
-                current = current.Next;   // Переходим к следующему узлу
+                prev = current;           // Сохранение предыдущего
+                current = current.Next;   // Переход к следующему
             }
 
-            // Узел не найден
-            return (null, null);
+            return (null, null);  // Узел не найден
         }
-
-        // public bool Compute(char[] name, char[] address)
-        // {
-        //     // Ищем узел по ключу
-        //     (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) = FindViaKey(name);
-
-        //     // Если узел не найден
-        //     if (node == null)
-        //         return false;
-
-        //     // Копируем адрес в переданный массив
-        //     char[] nodeAddress = node.Data.GetAddress();
-        //     for (int i = 0; i < nodeAddress.Length && i < address.Length; i++)
-        //     {
-        //         if (nodeAddress[i] == '\0') break;  // Прерываем на терминальном символе
-        //         address[i] = nodeAddress[i];        // Копируем символ
-        //     }
-
-        //     return true;  // Успешно нашли
-        // }
     }
 }

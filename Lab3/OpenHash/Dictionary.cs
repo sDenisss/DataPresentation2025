@@ -4,24 +4,24 @@ namespace Lab3.OpenHash;
 
 public class Dictionary : IDictionary
 {
-    private const int Capacity = 69;
-    private Node[] _array = new Node[Capacity];
+    private const int Capacity = 69;           // Размер хеш-таблицы
+    private Node[] _array = new Node[Capacity]; // Массив цепочек
 
     public void Delete(char[] x)
     {
-        if (!Member(x)) return;
+        if (!Member(x)) return;                // Элемента нет
 
-        int hash = Hash(x);
+        int hash = Hash(x);                    // Получение хеша
         Node current = _array[hash];
         
-        // Обработка удаления головы списка
+        // Удаление из головы списка
         if (current != null && IsEquals(current.Value, x))
         {
-            _array[hash] = current.Next!;
+            _array[hash] = current.Next!;      // Новая голова
             return;
         }
         
-        // Удаление из середины или конца списка
+        // Удаление из середины/конца списка
         Node previous = null!;
         while (current != null)
         {
@@ -29,7 +29,7 @@ public class Dictionary : IDictionary
             {
                 if (previous != null)
                 {
-                    previous.Next = current.Next;
+                    previous.Next = current.Next; // Пересвязывание
                 }
                 return;
             }
@@ -40,44 +40,44 @@ public class Dictionary : IDictionary
 
     public void Insert(char[] x)
     {
-        if (Member(x)) return;
+        if (Member(x)) return;                 // Дубликат
         
-        int hash = Hash(x);
+        int hash = Hash(x);                    // Получение хеша
         Node head = _array[hash];
-        _array[hash] = new Node(x, head);
+        _array[hash] = new Node(x, head);      // Вставка в голову
     }
 
     public void Makenull()
     {
         for (int i = 0; i < Capacity; i++)
         {
-            _array[i] = null!; // Обнуляем головы, а все остальные элементы оторвутся от корня, GC схавает их, слава шарпам!
+            _array[i] = null!;                 // Очистка всех цепочек
         }
     }
 
     public bool Member(char[] x)
     {
-        int hash = Hash(x);
+        int hash = Hash(x);                    // Получение хеша
         Node current = _array[hash];
 
-        while (current != null)
+        while (current != null)                // Обход цепочки
         {
-            if (IsEquals(current.Value, x)) return true;
+            if (IsEquals(current.Value, x)) return true; // Найден
             current = current.Next!;
         }
 
-        return false;
+        return false;                          // Не найден
     }
 
     public void Print()
     {
-        for (int i = 0; i < Capacity; i++)
+        for (int i = 0; i < Capacity; i++)     // Обход всех ячеек
         {
             Node current = _array[i];
-            if (current != null)
+            if (current != null)               // Непустая цепочка
             {
                 Console.Write($"{i}: ");
-                while (current != null)
+                while (current != null)        // Обход цепочки
                 {
                     Console.Write($"{new string(current.Value)}");
                     if (current.Next != null)
@@ -91,7 +91,7 @@ public class Dictionary : IDictionary
         }
     }
 
-    //---------extended private methods
+    // Хеш-функция (сумма ASCII кодов)
     private int Hash(char[] name)
     {
         int sum = 0;
@@ -102,6 +102,7 @@ public class Dictionary : IDictionary
         return sum % Capacity;
     }
     
+    // Сравнение массивов поэлементно
     private bool IsEquals(char[] name1, char[] name2)
     {
         if (name1.Length != name2.Length) return false;
