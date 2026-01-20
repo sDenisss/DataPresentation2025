@@ -1,9 +1,9 @@
 namespace Lab2.Map.Interfaces;
 
-public interface IMap<TKey, TValue>
+public interface IMap
 {
     void MakeNull();
-    void Assign(TKey key, TValue value);
-    bool Compute(TKey key, out TValue value);
+    void Assign(char[] key, char[] value);
+    bool Compute(char[] key, out char[] value);
     void Print();
 }

@@ -2,115 +2,152 @@ using Lab3.Interfce;
 
 namespace Lab3.OpenHash;
 
+/// <summary>
+/// Реализация словаря на основе открытого хеширования (метод цепочек).
+/// </summary>
 public class Dictionary : IDictionary
 {
-    private const int Capacity = 69;           // Размер хеш-таблицы
-    private Node[] _array = new Node[Capacity]; // Массив цепочек
+    private const int Capacity = 69;           // Фиксированный размер хеш-таблицы
+    private const int MaxSizeName = 10;       // Максимальная длина имени (символов)
+    private Node?[] _array = new Node?[Capacity]; // Основная таблица: массив цепочек (списков)
 
+    /// <summary>
+    /// Удаляет элемент из словаря.
+    /// </summary>
     public void Delete(char[] x)
     {
-        if (!Member(x)) return;                // Элемента нет
-
-        int hash = Hash(x);                    // Получение хеша
-        Node current = _array[hash];
+        int hash = Hash(x);                   // Вычисляем хеш элемента
+        Node? current = _array[hash];         // Начинаем с головы цепочки
+        Node? previous = null;                // Предыдущий узел (для перевязки)
         
-        // Удаление из головы списка
-        if (current != null && IsEquals(current.Value, x))
+        while (current != null)               // Проходим по цепочке
         {
-            _array[hash] = current.Next!;      // Новая голова
-            return;
-        }
-        
-        // Удаление из середины/конца списка
-        Node previous = null!;
-        while (current != null)
-        {
-            if (IsEquals(current.Value, x))
+            if (IsEquals(current.Value, x))   // Если нашли нужный элемент
             {
-                if (previous != null)
-                {
-                    previous.Next = current.Next; // Пересвязывание
-                }
-                return;
+                if (previous == null)         // Удаляем из головы цепочки
+                    _array[hash] = current.Next;  // Новая голова — следующий узел
+                else                          // Удаляем из середины или конца
+                    previous.Next = current.Next; // Пропускаем удаляемый узел
+                return;                       // Выход после удаления
             }
-            previous = current;
-            current = current.Next!;
+            previous = current;               // Сохраняем текущий как предыдущий
+            current = current.Next;           // Переходим к следующему узлу
         }
+        // Элемент не найден — ничего не делаем
     }
 
+    /// <summary>
+    /// Вставляет новый элемент в словарь.
+    /// </summary>
     public void Insert(char[] x)
     {
-        if (Member(x)) return;                 // Дубликат
+        if (FindNode(x) != null)              // Проверяем, нет ли уже такого элемента
+            return;                           // Элемент уже существует — вставка не требуется
         
-        int hash = Hash(x);                    // Получение хеша
-        Node head = _array[hash];
-        _array[hash] = new Node(x, head);      // Вставка в голову
+        int hash = Hash(x);                   // Вычисляем хеш элемента
+        _array[hash] = new Node(x, _array[hash]); // Вставляем новую голову цепочки
     }
 
+    /// <summary>
+    /// Очищает весь словарь (удаляет все элементы).
+    /// </summary>
     public void Makenull()
     {
-        for (int i = 0; i < Capacity; i++)
+        for (int i = 0; i < Capacity; i++)    // Проходим по всем ячейкам таблицы
         {
-            _array[i] = null!;                 // Очистка всех цепочек
+            _array[i] = null;                 // Очищаем каждую цепочку
         }
     }
 
+    /// <summary>
+    /// Проверяет, содержится ли элемент в словаре.
+    /// </summary>
     public bool Member(char[] x)
     {
-        int hash = Hash(x);                    // Получение хеша
-        Node current = _array[hash];
-
-        while (current != null)                // Обход цепочки
-        {
-            if (IsEquals(current.Value, x)) return true; // Найден
-            current = current.Next!;
-        }
-
-        return false;                          // Не найден
+        return FindNode(x) != null;           // Ищем элемент; если найден — true, иначе false
     }
 
+    /// <summary>
+    /// Выводит все элементы словаря на экран.
+    /// </summary>
     public void Print()
     {
-        for (int i = 0; i < Capacity; i++)     // Обход всех ячеек
+        for (int i = 0; i < Capacity; i++)    // Проходим по всем ячейкам таблицы
         {
-            Node current = _array[i];
-            if (current != null)               // Непустая цепочка
+            Node? current = _array[i];        // Берём голову текущей цепочки
+            if (current != null)              // Если цепочка не пуста
             {
-                Console.Write($"{i}: ");
-                while (current != null)        // Обход цепочки
+                Console.Write($"{i}: ");      // Выводим индекс ячейки
+                while (current != null)       // Проходим по всей цепочке
                 {
-                    Console.Write($"{new string(current.Value)}");
-                    if (current.Next != null)
-                        Console.Write(" -> ");
-                    else
-                        Console.Write(" -> null");
-                    current = current.Next!;
+                    Console.Write($"{new string(current.Value)}"); // Выводим значение узла
+                    if (current.Next != null) // Если есть следующий узел
+                        Console.Write(" -> ");  // Разделитель между узлами
+                    else                      // Если это последний узел
+                        Console.Write(" -> null"); // Конец цепочки
+                    current = current.Next;   // Переходим к следующему узлу
                 }
-                Console.WriteLine();
+                Console.WriteLine();          // Новая строка для следующей цепочки
             }
         }
     }
 
-    // Хеш-функция (сумма ASCII кодов)
+    /// <summary>
+    /// Ищет узел с заданным значением в словаре.
+    /// </summary>
+    private Node? FindNode(char[] x)
+    {
+        int hash = Hash(x);                   // Вычисляем хеш элемента
+        Node? current = _array[hash];         // Начинаем с головы соответствующей цепочки
+
+        while (current != null)               // Проходим по цепочке
+        {
+            if (IsEquals(current.Value, x))   // Сравниваем значения
+                return current;               // Найден — возвращаем узел
+            current = current.Next;           // Переходим к следующему узлу
+        }
+        
+        return null;                          // Не найден — возвращаем null
+    }
+
+    // === Вспомогательные (приватные) методы ===
+
+    /// <summary>
+    /// Хеш-функция: сумма ASCII-кодов символов строки по модулю Capacity.
+    /// </summary>
     private int Hash(char[] name)
     {
-        int sum = 0;
-
-        for (int i = 0; i < name.Length && name[i] != '\0'; i++)
-            sum += (int)name[i];
-
-        return sum % Capacity;
+        int sum = 0;                          // Аккумулятор суммы кодов
+        
+        for (int i = 0; i < name.Length && name[i] != '\0'; i++) // Проходим до конца строки или массива
+            sum += name[i];                   // Суммируем ASCII-коды символов
+        
+        return sum % Capacity;                // Возвращаем остаток от деления на размер таблицы
     }
     
-    // Сравнение массивов поэлементно
+    /// <summary>
+    /// Сравнивает два массива символов (до MaxSizeName или до конца строки).
+    /// </summary>
     private bool IsEquals(char[] name1, char[] name2)
     {
-        if (name1.Length != name2.Length) return false;
-        if (name1 == null || name2 == null) return name1 == name2;
-
-        for (int i = 0; i < name1.Length; i++)
-            if (name1[i] != name2[i]) return false;
-
-        return true;
+        if (name1 == null && name2 == null)   // Оба null — равны
+            return true;
+        
+        if (name1 == null || name2 == null)   // Один null, другой нет — не равны
+            return false;
+        
+        for (int i = 0; i < MaxSizeName; i++) // Проверяем до максимальной длины имени
+        {
+            char c1 = (i < name1.Length) ? name1[i] : '\0'; // Берем символ или '\0', если вышли за границу
+            char c2 = (i < name2.Length) ? name2[i] : '\0';
+            
+            if (c1 != c2)                     // Символы не совпали — строки разные
+                return false;
+            
+            if (c1 == '\0' || c2 == '\0')     // Достигнут конец одной из строк
+                break;                        // Прерываем сравнение
+        }
+        
+        return true;                          // Все проверенные символы совпали
     }
 }

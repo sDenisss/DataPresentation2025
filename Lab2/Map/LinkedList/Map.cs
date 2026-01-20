@@ -4,9 +4,9 @@ using Lab2.Map.Interfaces;
 namespace Lab2.Map.LinkedList
 {
     // Реализация Map на связном списке
-    public class Map<TKey, TValue> : IMap<char[], char[]>
+    public class Map : IMap
     {
-        private Node<TKey, TValue>? _head;  // Голова списка
+        private Node? _head;  // Голова списка
 
         // Сравнение двух массивов char до '\0'
         private static bool CompareCharArrays(char[] a1, char[] a2)
@@ -33,12 +33,12 @@ namespace Lab2.Map.LinkedList
             // Создание первого узла
             if (_head == null)
             {
-                _head = new Node<TKey, TValue>(name, address, null!);
+                _head = new Node(name, address, null!);
                 return;
             }
 
             // Поиск существующего ключа
-            (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) = FindViaKey(name);
+            Node? node = FindViaKey(name);
 
             // Обновление значения
             if (node != null)
@@ -48,7 +48,7 @@ namespace Lab2.Map.LinkedList
             }
 
             // Добавление нового узла в начало
-            _head = new Node<TKey, TValue>(name, address, _head);
+            _head = new Node(name, address, _head);
         }
 
         // Получение значения по ключу
@@ -56,7 +56,7 @@ namespace Lab2.Map.LinkedList
         {
             address = new char[Addressee.ADDRESS_CAPACITY];  // Массив для результата
             
-            (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) = FindViaKey(name);
+            Node? node = FindViaKey(name);
 
             // Ключ не найден
             if (node == null)
@@ -85,7 +85,7 @@ namespace Lab2.Map.LinkedList
         // Вывод всех элементов
         public void Print()
         {
-            Node<TKey, TValue>? current = _head;  // Начало списка
+            Node? current = _head;  // Начало списка
             
             while (current != null)
             {
@@ -95,22 +95,19 @@ namespace Lab2.Map.LinkedList
         }
 
         // Поиск узла по ключу
-        private (Node<TKey, TValue>? node, Node<TKey, TValue>? prev) FindViaKey(char[] key)
+        private Node FindViaKey(char[] key)
         {
-            Node<TKey, TValue>? current = _head;  // Текущий узел
-            Node<TKey, TValue>? prev = null;      // Предыдущий узел
-
+            Node? current = _head;  // Текущий узел
             while (current != null)
             {
                 // Ключи совпадают
                 if (CompareCharArrays(current.Data.GetName(), key))
-                    return (current, prev);
+                    return current;
 
-                prev = current;           // Сохранение предыдущего
                 current = current.Next;   // Переход к следующему
             }
 
-            return (null, null);  // Узел не найден
+            return null!;  // Узел не найден
         }
     }
 }

@@ -2,13 +2,13 @@ using Lab2.Queue.Interfaces;
 
 namespace Lab2.Queue.ATDList;
 
-public class Queue<T> : IQueue<T>
+public class Queue : IQueue
 {
-    private Lab1.DoublyLinked.List<T> _list = new();  // Используем ATD List
+    private Lab1.DoublyLinked.List<char> _list = new();  // Используем ATD List
 
-    public T Dequeue()
+    public char Dequeue()
     {
-        T item = _list.Retrieve(_list.First());  // Получение первого
+        char item = _list.Retrieve(_list.First());  // Получение первого
         _list.Delete(_list.First());             // Удаление из списка
         return item;
     }
@@ -18,12 +18,12 @@ public class Queue<T> : IQueue<T>
         return _list.First() == _list.End();     // Сравнение позиций
     }
 
-    public void Enqueue(T x)
+    public void Enqueue(char x)
     {
         _list.Insert(x, _list.End());            // Вставка в конец
     }
 
-    public T Front()
+    public char Front()
     {
         return _list.Retrieve(_list.First());    // Первый элемент
     }

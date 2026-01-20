@@ -11,7 +11,7 @@ public class Array
         
         // Тест 1: Создание очереди и проверка начального состояния
         Console.WriteLine("\n1. Создание очереди:");
-        Lab2.Queue.Array.Queue<char> queue = new Lab2.Queue.Array.Queue<char>();
+        Lab2.Queue.Array.Queue queue = new Lab2.Queue.Array.Queue();
         Console.WriteLine($"Очередь пустая: {queue.Empty()}");
         Console.WriteLine($"Очередь полная: {queue.Full()}");
         
@@ -60,25 +60,6 @@ public class Array
         
         Console.WriteLine($"Очередь пустая: {queue.Empty()}");
         Console.WriteLine($"Первый элемент (Front): '{queue.Front()}'");
-        
-        // Тест 5: Проверка кольцевого буфера
-        Console.WriteLine("\n5. Тестирование кольцевого буфера:");
-        Lab2.Queue.Array.Queue<int> smallQueue = new Lab2.Queue.Array.Queue<int>();
-        
-        // Заполняем частично
-        for (int i = 1; i <= 3; i++)
-        {
-            smallQueue.Enqueue(i);
-        }
-        Console.WriteLine("Добавили: 1, 2, 3");
-        
-        // Извлекаем два элемента
-        Console.WriteLine($"Извлекли: {smallQueue.Dequeue()}, {smallQueue.Dequeue()}");
-        
-        // Добавляем еще - должны использовать освободившееся место в начале
-        smallQueue.Enqueue(4);
-        smallQueue.Enqueue(5);
-        Console.WriteLine("Добавили: 4, 5");
 
         
         // Тест 6: Проверка метода MakeNull

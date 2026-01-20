@@ -11,7 +11,7 @@ public class CircularLinkedList
         
         // Тест 1: Создание очереди и проверка начального состояния
         Console.WriteLine("\n1. Создание очереди:");
-        Lab2.Queue.Array.Queue<char> queue = new Lab2.Queue.Array.Queue<char>();
+        Lab2.Queue.Array.Queue queue = new Lab2.Queue.Array.Queue();
         Console.WriteLine($"Очередь пустая: {queue.Empty()}");
         Console.WriteLine($"Очередь полная: {queue.Full()}");
         

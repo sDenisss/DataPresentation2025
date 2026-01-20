@@ -1,5 +1,7 @@
 using System;
+using Lab2.Map.Interfaces;
 using Lab2.Map.LinkedList;
+using MapClass = Lab2.Map.LinkedList.Map;
 
 namespace Lab2.Map.Tests
 {
@@ -10,7 +12,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine("=== КОРОТКИЕ ТЕСТЫ Map<TKey, TValue> ===");
             
             // Создаем Map с любыми типами (все равно работаем с char[])
-            var map = new Map<int, string>(); // типы не важны
+            MapClass map = new MapClass();
             
             Test1_BasicAddSearch(map);
             Test2_UpdateValue(map);
@@ -21,7 +23,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine("\nВсе тесты пройдены!");
         }
         
-        private static void Test1_BasicAddSearch(Map<int, string> map)
+        private static void Test1_BasicAddSearch(MapClass map)
         {
             Console.WriteLine("\n1. Базовое добавление и поиск:");
             
@@ -44,7 +46,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine($"Добавили: {new string(key).TrimEnd('\0')} -> {expected}");
         }
         
-        private static void Test2_UpdateValue(Map<int, string> map)
+        private static void Test2_UpdateValue(MapClass map)
         {
             Console.WriteLine("\n2. Обновление значения:");
             
@@ -63,7 +65,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine($" Обновили: {expected}");
         }
         
-        private static void Test3_NotFound(Map<int, string> map)
+        private static void Test3_NotFound(MapClass map)
         {
             Console.WriteLine("\n3. Поиск несуществующего ключа:");
             
@@ -76,7 +78,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine("Несуществующий ключ корректно не найден");
         }
         
-        private static void Test4_MakeNull(Map<int, string> map)
+        private static void Test4_MakeNull(MapClass map)
         {
             Console.WriteLine("\n4. Очистка словаря:");
             
@@ -91,7 +93,7 @@ namespace Lab2.Map.Tests
             Console.WriteLine("Словарь успешно очищен");
         }
         
-        private static void Test5_MultipleItems(Map<int, string> map)
+        private static void Test5_MultipleItems(MapClass map)
         {
             Console.WriteLine("\n5. Несколько элементов:");
             

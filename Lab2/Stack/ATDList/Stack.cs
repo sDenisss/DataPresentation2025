@@ -2,13 +2,13 @@ using Lab2.Stack.Interfaces;
 
 namespace Lab2.Stack.ATDList;
 
-public class Stack<T> : IStack<T>
+public class Stack : IStack
 {
-    private Lab1.DoublyLinked.List<T> _list = new();  // ATD List как основа
+    private Lab1.DoublyLinked.List<char> _list = new();  // ATD List как основа
 
     public bool Empty()
     {
-        return _list.First().Posit == _list.End().Posit;  // Сравнение позиций
+        return _list.First() == _list.End();  // Сравнение позиций
     }
 
     public bool Full()
@@ -21,21 +21,21 @@ public class Stack<T> : IStack<T>
         _list.Makenull();                       // Очистка списка
     }
 
-    public T Pop()
+    public char Pop()
     {
-        T item = _list.Retrieve(_list.First()); // Получение первого
+        char item = _list.Retrieve(_list.First()); // Получение первого
         _list.Delete(_list.First());            // Удаление из списка
         return item;
     }
 
-    public void Push(T x)
+    public void Push(char x)
     {
         _list.Insert(x, _list.First());         // Вставка в начало
     }
 
-    public T Top()
+    public char Top()
     {
-        T? item = _list.Retrieve(_list.End());  // Получение последнего
+        char item = _list.Retrieve(_list.End());  // Получение последнего
         return item;
     }
 }

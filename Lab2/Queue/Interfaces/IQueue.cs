@@ -1,11 +1,11 @@
 namespace Lab2.Queue.Interfaces;
 
-public interface IQueue<T>
+public interface IQueue
 {
     void MakeNull();
-    T Front();
-    T Dequeue();
-    void Enqueue(T x);
+    char Front();
+    char Dequeue();
+    void Enqueue(char x);
     bool Empty();
     bool Full();
 }

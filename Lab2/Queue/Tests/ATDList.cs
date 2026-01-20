@@ -11,7 +11,7 @@ public class ATDList
 
         // Тест 1: Создание очереди и проверка начального состояния
         Console.WriteLine("\n1. Создание очереди:");
-        Lab2.Queue.Array.Queue<char> queue = new Lab2.Queue.Array.Queue<char>();
+        Lab2.Queue.Array.Queue queue = new Lab2.Queue.Array.Queue();
         Console.WriteLine($"Очередь пустая: {queue.Empty()}");
         Console.WriteLine($"Очередь полная: {queue.Full()}");
 
@@ -70,7 +70,7 @@ public class ATDList
 
         // Тест 8: Проверка "бесконечной" емкости
         Console.WriteLine("\n8. Тестирование емкости (всегда false):");
-        Lab2.Queue.Array.Queue<char> largeQueue = new Lab2.Queue.Array.Queue<char>();
+        Lab2.Queue.Array.Queue largeQueue = new Lab2.Queue.Array.Queue();
 
         for (char c = 'A'; c <= 'Z'; c++)
         {

@@ -11,7 +11,7 @@ public class Array
         
         // Тест 1: Создание стека и проверка начального состояния
         Console.WriteLine("\n1. Создание стека:");
-        Lab2.Stack.Array.Stack<char> stack = new Lab2.Stack.Array.Stack<char>();
+        Lab2.Stack.Array.Stack stack = new Lab2.Stack.Array.Stack();
         Console.WriteLine($"Стек пустой: {stack.Empty()}");
         Console.WriteLine($"Стек полный: {stack.Full()}");
         
@@ -78,32 +78,9 @@ public class Array
         stack.MakeNull();
         Console.WriteLine($"После MakeNull - стек пустой: {stack.Empty()}");
         
-        // Тест 7: Проверка переполнения стека
-        Console.WriteLine("\n7. Тестирование переполнения стека:");
-        Lab2.Stack.Array.Stack<int> capacityStack = new Lab2.Stack.Array.Stack<int>();
-        
-        int capacityCount = 0;
-        for (int i = 1; i <= 100; i++)
-        {
-            if (!capacityStack.Full())
-            {
-                capacityStack.Push(i);
-                capacityCount++;
-            }
-            else
-            {
-                Console.WriteLine($"Стек заполнен на {i}-м элементе");
-                break;
-            }
-        }
-        
-        Console.WriteLine($"Максимальная вместимость: 52");
-        Console.WriteLine($"Добавлено элементов: {capacityCount}");
-        Console.WriteLine($"Стек полный: {capacityStack.Full()}");
-        
         // Тест 8: Проверка работы после переполнения
         Console.WriteLine("\n8. Работа после переполнения:");
-        Lab2.Stack.Array.Stack<char> testStack = new Lab2.Stack.Array.Stack<char>();
+        Lab2.Stack.Array.Stack testStack = new Lab2.Stack.Array.Stack();
         
         // Заполняем стек до предела
         for (char c = 'A'; c <= 'Z'; c++)

@@ -2,10 +2,10 @@ using Lab2.Stack.Interfaces;
 
 namespace Lab2.Stack.Array;
 
-public class Stack<T> : IStack<T>
+public class Stack : IStack
 {
     private const int _capacity = 52;        // Максимальный размер
-    private T[] _array = new T[_capacity];  // Хранилище элементов
+    private char[] _array = new char[_capacity];  // Хранилище элементов
     private int _last = -1;                  // Индекс вершины (-1 = пусто)
 
     public bool Empty()
@@ -23,18 +23,18 @@ public class Stack<T> : IStack<T>
         _last = -1;                          // Сброс указателя
     }
 
-    public T Pop()
+    public char Pop()
     {
-        T item = _array[_last--];            // Получение и уменьшение указателя
+        char item = _array[_last--];            // Получение и уменьшение указателя
         return item;
     }
 
-    public void Push(T x)
+    public void Push(char x)
     {
         _array[++_last] = x;                 // Увеличение указателя и запись
     }
 
-    public T Top()
+    public char Top()
     {
         return _array[_last];                // Элемент на вершине
     }

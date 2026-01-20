@@ -11,7 +11,7 @@ public class ATDList
 
         // Тест 1: Создание стека и проверка начального состояния
         Console.WriteLine("\n1. Создание стека:");
-        Lab2.Stack.Array.Stack<char> stack = new Lab2.Stack.Array.Stack<char>();
+        Lab2.Stack.Array.Stack stack = new Lab2.Stack.Array.Stack();
         Console.WriteLine($"Стек пустой: {stack.Empty()}");
         Console.WriteLine($"Стек полный: {stack.Full()}");
 
@@ -82,7 +82,7 @@ public class ATDList
 
         // Тест 8: Проверка "бесконечной" емкости
         Console.WriteLine("\n8. Тестирование емкости (всегда false):");
-        Lab2.Stack.Array.Stack<char> largeStack = new Lab2.Stack.Array.Stack<char>();
+        Lab2.Stack.Array.Stack largeStack = new Lab2.Stack.Array.Stack();
 
         for (char c = 'A'; c <= 'Z'; c++)
         {

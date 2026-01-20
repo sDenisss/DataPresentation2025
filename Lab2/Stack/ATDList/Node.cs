@@ -1,13 +1,13 @@
 namespace Lab2.Stack.ATDList;
 
-public class Node<T>
+public class Node
 {
-    public T? Value { get; set; }
-    public Node<T>? Next { get; set; }
-    public Node<T>? Previous { get; set; }
+    public char? Value { get; set; }
+    public Node? Next { get; set; }
+    public Node? Previous { get; set; }
 
     public Node() { }
-    public Node(T? value, Node<T>? next, Node<T>? previous)
+    public Node(char? value, Node? next, Node? previous)
     {
         Value = value;
         Next = next;

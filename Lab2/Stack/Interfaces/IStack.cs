@@ -1,11 +1,11 @@
 namespace Lab2.Stack.Interfaces;
 
-public interface IStack<T>
+public interface IStack
 {
     void MakeNull();
-    T Top();
-    T Pop();
-    void Push(T x);
+    char Top();
+    char Pop();
+    void Push(char x);
     bool Empty();
     bool Full();
 }

@@ -2,14 +2,14 @@ using Lab2.Queue.Interfaces;
 
 namespace Lab2.Queue.CircularyLinkedList;
 
-public class Queue<T> : IQueue<T>
+public class Queue : IQueue
 {
-    private Node<T>? _tail;                       // Хвост кольцевого списка
+    private Node? _tail;                       // Хвост кольцевого списка
 
-    public T Dequeue()
+    public char Dequeue()
     {
-        Node<T> first = _tail!.Next!;            // Голова очереди
-        T item = first.Value!;                    // Значение головы
+        Node first = _tail!.Next!;            // Голова очереди
+        char item = first.Value!;                    // Значение головы
         
         if (_tail == first)                      // Единственный элемент
         {
@@ -27,22 +27,22 @@ public class Queue<T> : IQueue<T>
         return _tail == null;                    // Проверка на пустоту
     }
 
-    public void Enqueue(T x)
+    public void Enqueue(char x)
     {
         if (_tail == null)                       // Первый элемент
         {
-            _tail = new Node<T>(x, null);
+            _tail = new Node(x, null!);
             _tail.Next = _tail;                  // Замыкание на себя
         }
         else                                     // Добавление в конец
         {
-            Node<T>? temp = new Node<T>(x, _tail!.Next);
+            Node? temp = new Node(x, _tail!.Next);
             _tail.Next = temp;                   // Обновление связей
             _tail = temp;                        // Новый хвост
         }
     }
 
-    public T Front()
+    public char Front()
     {
         return _tail!.Next!.Value!;              // Значение головы
     }
