@@ -1,13 +1,13 @@
 namespace Lab4.Models;
 public class Student : Base
 {
-    public string Name { get; }
+    public char[] Name { get; }
     public Link? FirstEnrollment { get; set; }
 
-    public Student(string name)
+    public Student(char[] name)
     {
         Name = name;
     }
     
-    public override string ToString() => Name;
+    public override bool IsHasNext { get => false; }
 }

@@ -23,7 +23,7 @@ public class Queue : IQueue
 
     public void Enqueue(char x)
     {
-        _last = (_last + 1) % _capacity;      // Циклическое увеличение
+        _last = Next(_last);      // Циклическое увеличение
         _array[_last] = x;                     // Запись элемента
     }
 

@@ -1,18 +1,21 @@
 namespace Lab4.Models;
 public class Link : Base
 {
-    public Student Student { get; }
-    public Course Course { get; }
+    public Student? Student { get; set; }
+    public Course? Course { get; set; }
+    public Base? NextStudentLink { get; set; }
+    public Base? NextCourseLink { get; set; }
 
-    public Link? NextStudentLink { get; set; }
-    public Link? NextCourseLink { get; set; }
-
-    public Link(Student student, Course course)
+    public Link(Base nextStudentLink, Base nextCourseLink)
     {
-        Student = student;
-        Course = course;
+        NextStudentLink = nextStudentLink;
+        NextCourseLink = nextCourseLink;
     }
+    
+    // Методы для установки связей
+    internal void SetNextStudentLink(Link? link) => NextStudentLink = link;
+    internal void SetNextCourseLink(Link? link) => NextCourseLink = link;
 
-    public override string ToString() => ($"{Student.Name} -> {Course.Name}");
+    public override bool IsHasNext { get => true; }
     
 }

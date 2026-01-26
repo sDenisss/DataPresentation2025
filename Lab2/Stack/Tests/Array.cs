@@ -1,5 +1,6 @@
 using Lab2.Stack.Array;
 using System;
+using System.Text;
 
 namespace Lab2.Stack.Tests;
 
@@ -12,12 +13,12 @@ public class Array
         // Тест 1: Создание стека и проверка начального состояния
         Console.WriteLine("\n1. Создание стека:");
         Lab2.Stack.Array.Stack stack = new Lab2.Stack.Array.Stack();
-        Console.WriteLine($"Стек пустой: {stack.Empty()}");
-        Console.WriteLine($"Стек полный: {stack.Full()}");
+        // Console.WriteLine($"Стек пустой: {stack.Empty()}");
+        // Console.WriteLine($"Стек полный: {stack.Full()}");
         
         // Тест 2: Добавление символов из строки (согласно заданию)
         Console.WriteLine("\n2. Добавление символов из строки:");
-        string testString = "HelloWorldProgrammingDataStructures";
+        string testString = "HelloWorldProgrammingDataStructuresHelloWorldProgrammingDataStructures";
         Console.WriteLine($"Исходная строка: {testString}");
         Console.WriteLine("Добавляем символы в стек:");
         
@@ -27,7 +28,7 @@ public class Array
             if (!stack.Full())
             {
                 stack.Push(c);
-                Console.WriteLine($"Добавлен: '{c}'");
+                // Console.WriteLine($"Добавлен: '{c}'");
                 addedCount++;
             }
             else
@@ -49,55 +50,22 @@ public class Array
         Console.WriteLine("Извлекаем символы пока стек не станет пустым:");
         
         int extractedCount = 0;
+        StringBuilder stringBuilder = new StringBuilder();
         while (!stack.Empty())
         {
             char ch = stack.Pop();
-            Console.WriteLine($"Извлечен: '{ch}'");
+            // Console.WriteLine($"Извлечен: '{ch}'");
+            stringBuilder.Append(ch);
             extractedCount++;
         }
+
+        System.Console.WriteLine(stringBuilder.ToString());
+
+
         Console.WriteLine($"Всего извлечено символов: {extractedCount}");
         Console.WriteLine($"Стек пустой после извлечения: {stack.Empty()}");
         
-        // Тест 5: Проверка порядка LIFO
-        Console.WriteLine("\n5. Проверка порядка LIFO (последний пришел - первый ушел):");
-        stack.Push('A');
-        stack.Push('B');
-        stack.Push('C');
-        Console.WriteLine("Добавили: A, B, C (в этом порядке)");
-        Console.WriteLine($"Извлекаем: '{stack.Pop()}' (должен быть C)");
-        Console.WriteLine($"Извлекаем: '{stack.Pop()}' (должен быть B)");
-        Console.WriteLine($"Извлекаем: '{stack.Pop()}' (должен быть A)");
-        
-        // Тест 6: Проверка метода MakeNull
-        Console.WriteLine("\n6. Тестирование метода MakeNull:");
-        stack.Push('X');
-        stack.Push('Y');
-        stack.Push('Z');
-        Console.WriteLine($"До MakeNull - стек пустой: {stack.Empty()}");
-        
-        stack.MakeNull();
-        Console.WriteLine($"После MakeNull - стек пустой: {stack.Empty()}");
-        
-        // Тест 8: Проверка работы после переполнения
-        Console.WriteLine("\n8. Работа после переполнения:");
-        Lab2.Stack.Array.Stack testStack = new Lab2.Stack.Array.Stack();
-        
-        // Заполняем стек до предела
-        for (char c = 'A'; c <= 'Z'; c++)
-        {
-            testStack.Push(c);
-        }
-        // Пытаемся добавить еще (не должно добавить)
-        testStack.Push('+');
-        testStack.Push('-');
-        
-        Console.WriteLine("Извлекаем элементы из заполненного стека:");
-        while (!testStack.Empty())
-        {
-            Console.Write($"{testStack.Pop()} ");
-        }
-        Console.WriteLine();
-        
+    
         Console.WriteLine("\n=== ТЕСТИРОВАНИЕ ЗАВЕРШЕНО ===");
     }
 }

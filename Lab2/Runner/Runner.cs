@@ -1,5 +1,9 @@
 public class Runner
 {
+    public static void RunTests2()
+    {
+        
+    }
     public static void RunTests()
     {
         Console.WriteLine("1. Stack Array");
