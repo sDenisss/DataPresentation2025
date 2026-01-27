@@ -12,20 +12,19 @@ public class StudentHashArray
     }
 
     // Добавить студента
-    public void AddStudent(string name)
+    public void AddStudent(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
             if (_studentsTable[index] == null)
             {
-                _studentsTable[index] = new Student(nameChars);
+                _studentsTable[index] = new Student(name);
                 return;
             }
             
-            if (ArraysEqual(_studentsTable[index]!.Name, nameChars))
+            if (ArraysEqual(_studentsTable[index]!.Name, name))
                 return; // Уже существует
             
             index = (index + 1) % Capacity;
@@ -33,10 +32,9 @@ public class StudentHashArray
     }
 
     // Найти студента
-    public Student? FindStudent(string name)
+    public Student? FindStudent(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
@@ -45,7 +43,7 @@ public class StudentHashArray
             if (student == null)
                 return null;
                 
-            if (ArraysEqual(student.Name, nameChars))
+            if (ArraysEqual(student.Name, name))
                 return student;
                 
             index = (index + 1) % Capacity;
@@ -55,17 +53,16 @@ public class StudentHashArray
     }
 
     // Удалить студента
-    public void RemoveStudent(string name)
+    public void RemoveStudent(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
             if (_studentsTable[index] == null)
                 return;
                 
-            if (ArraysEqual(_studentsTable[index]!.Name, nameChars))
+            if (ArraysEqual(_studentsTable[index]!.Name, name))
             {
                 _studentsTable[index] = null;
                 return;

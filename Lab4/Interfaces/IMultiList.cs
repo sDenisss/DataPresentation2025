@@ -1,9 +1,9 @@
 public interface IMultiList
 {
-    void AddStudentToCourse(string s, string c);
-    void RemoveStudentFromCourse(string s, string c);
-    void RemoveStudent(string s);
-    void RemoveCourse(string c);
-    void PrintStudentsOfCourse(string c);
-    void PrintCoursesOfStudent(string s);
+    void AddStudentToCourse(char[] s, char[] c);
+    void RemoveStudentFromCourse(char[] s, char[] c);
+    void RemoveStudent(char[] s);
+    void RemoveCourse(char[] c);
+    void PrintStudentsOfCourse(char[] c);
+    void PrintCoursesOfStudent(char[] s);
 }

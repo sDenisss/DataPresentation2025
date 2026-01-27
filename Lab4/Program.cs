@@ -6,35 +6,44 @@ public class Program
     {
         var multiList = new MultiList();
 
+        char[] name1 = {'A', 'l', 'i', 'c', 'e'};
+        char[] name2 = {'B', 'o', 'b'};
+        char[] name3 = {'C', 'h', 'a', 'r', 'l', 'i', 'e'};
+
+        char[] course1 = {'M', 'a', 't', 'h'};
+        char[] course2 = {'P', 'h', 'y', 's'};
+        char[] course3 = {'C', 'S'};
+
         // Add students
-        multiList.AddStudent("Alice");  
-        multiList.AddStudent("Bob");
-        multiList.AddStudent("Charlie");
+        multiList.AddStudent(name1);  
+        multiList.AddStudent(name2);  
+        multiList.AddStudent(name3);  
 
         // Add courses
-        multiList.AddCourse("Math");
-        multiList.AddCourse("Physics");
-        multiList.AddCourse("CS");
+        multiList.AddCourse(course1);
+        multiList.AddCourse(course2);
+        multiList.AddCourse(course3);
+
 
         // Enrollments - добавить студентов на курсы
-        multiList.AddStudentToCourse("Alice", "Math");
-        multiList.AddStudentToCourse("Alice", "CS");
-        multiList.AddStudentToCourse("Bob", "Math");
-        multiList.AddStudentToCourse("Bob", "Physics");
-        multiList.AddStudentToCourse("Charlie", "CS");
+        multiList.AddStudentToCourse(name1, course1);
+        multiList.AddStudentToCourse(name1, course3);
+        multiList.AddStudentToCourse(name2, course1);
+        multiList.AddStudentToCourse(name2, course2);
+        multiList.AddStudentToCourse(name3, course3);
 
         multiList.PrintAll();
 
         Console.WriteLine();
 
         // Remove one enrollment
-        multiList.RemoveStudentFromCourse("Bob", "Math"); 
+        multiList.RemoveStudentFromCourse(name2, course1); 
 
         // Remove student (should remove all his enrollments)
-        multiList.RemoveStudent("Alice");
+        multiList.RemoveStudent(name1);
 
         // Remove course (should remove all enrollments to it)
-        multiList.RemoveCourse("CS");
+        multiList.RemoveCourse(course3);
 
         Console.WriteLine();
         multiList.PrintAll();
@@ -43,9 +52,9 @@ public class Program
 
         // Используем новые методы для вывода
         Console.WriteLine("Students in Physics:");
-        multiList.PrintStudentsOfCourse("Physics"); 
+        multiList.PrintStudentsOfCourse(course2); 
         
         Console.WriteLine("\nCourses of Bob:");
-        multiList.PrintCoursesOfStudent("Bob");
+        multiList.PrintCoursesOfStudent(name2);
     }
 }

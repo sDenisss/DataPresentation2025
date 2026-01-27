@@ -1,13 +1,12 @@
 using Lab4.HashArrays;
 using Lab4.Models;
+using System.Text;
 
 namespace Lab4.Models;
 
 public class MultiList : IMultiList
 {
-    // Хеш-таблица курсов (хранит объекты Course)
     private readonly CourseHashArray courseHashArray;
-    // Хеш-таблица студентов (хранит объекты Student)
     private readonly StudentHashArray studentHashArray;
 
     public MultiList()
@@ -17,27 +16,24 @@ public class MultiList : IMultiList
     }
 
     // addStudentToCourse(s, c) – добавить студента s на курс c
-    public void AddStudentToCourse(string studentName, string courseName)
+    public void AddStudentToCourse(char[] studentName, char[] courseName)
     {
-        // Ищем студента в хеш-таблице
-        var student = studentHashArray.FindStudent(studentName);
-        // Если студента нет - добавляем
+        // Ищем студента
+        Student? student = studentHashArray.FindStudent(studentName);
         if (student == null)
         {
             studentHashArray.AddStudent(studentName);
             student = studentHashArray.FindStudent(studentName);
         }
 
-        // Ищем курс в хеш-таблице
-        var course = courseHashArray.FindCourse(courseName);
-        // Если курса нет - добавляем
+        // Ищем курс
+        Course? course = courseHashArray.FindCourse(courseName);
         if (course == null)
         {
             courseHashArray.AddCourse(courseName);
             course = courseHashArray.FindCourse(courseName);
         }
 
-        // Проверка на null (защита от ошибок)
         if (student == null || course == null)
             return;
 
@@ -45,266 +41,338 @@ public class MultiList : IMultiList
         if (FindEnrollment(student, course) != null)
             return;
 
-        // Создаем новую связь (Link) между студентом и курсом
-        Link link = new Link(null!, null!);  // Временная пустая связь
+        // Создаем новую связь
+        Link link = new Link(null!, null!);
 
-        // Добавляем связь в список курсов студента (вставка в начало)
-        link.SetNextStudentLink(student.FirstEnrollment);  // Новая связь указывает на старый первый элемент
-        student.FirstEnrollment = link;                     // Студент теперь указывает на новую связь
+        // Добавляем в цепочку студента
+        // Если у студента нет связей, link указывает на самого студента
+        // Иначе link указывает на первую существующую связь
+        if (student.FirstEnrollment == null)
+            link.SetNextStudentLink(student);  // Ссылка на самого студента
+        else
+            link.SetNextStudentLink(student.FirstEnrollment);
+        
+        student.FirstEnrollment = link;
 
-        // Добавляем связь в список студентов курса (вставка в начало)
-        link.SetNextCourseLink(course.FirstEnrollment);     // Новая связь указывает на старый первый элемент
-        course.FirstEnrollment = link;                      // Курс теперь указывает на новую связь
-
-        // Сохраняем владельцев связи (студента и курс)
-        link.Student = student;  // Устанавливаем ссылку на студента
-        link.Course = course;    // Устанавливаем ссылку на курс
+        // Добавляем в цепочку курса
+        // Если у курса нет связей, link указывает на сам курс
+        // Иначе link указывает на первую существующую связь
+        if (course.FirstEnrollment == null)
+            link.SetNextCourseLink(course);  // Ссылка на сам курс
+        else
+            link.SetNextCourseLink(course.FirstEnrollment);
+        
+        course.FirstEnrollment = link;
     }
 
     // removeStudentFromCourse(s, c) – удалить студента s c курса c
-    public void RemoveStudentFromCourse(string studentName, string courseName)
+    public void RemoveStudentFromCourse(char[] studentName, char[] courseName)
     {
-        // Ищем студента по имени
-        var student = studentHashArray.FindStudent(studentName);
-        if (student == null) return;  // Студент не найден
+        Student? student = studentHashArray.FindStudent(studentName);
+        if (student == null) return;
 
-        // Ищем курс по имени
-        var course = courseHashArray.FindCourse(courseName);
-        if (course == null) return;  // Курс не найден
+        Course? course = courseHashArray.FindCourse(courseName);
+        if (course == null) return;
 
-        // Удаляем связь между студентом и курсом
         RemoveEnrollment(student, course);
     }
 
-    // ===== ВНУТРЕННЕЕ УДАЛЕНИЕ СВЯЗИ =====
+    // ===== УДАЛЕНИЕ СВЯЗИ =====
     private void RemoveEnrollment(Student student, Course course)
     {
-        // --- удаляем из цепочки студента ---
-        Base? prevS = null;              // Предыдущий элемент в списке студента
-        Base? currS = student.FirstEnrollment;  // Текущий элемент (начинаем с первого)
+        // Находим регистрационную связь
+        Link? registration = FindEnrollment(student, course);
+        if (registration == null) return;
 
-        // Проходим по всем курсам студента
-        while (currS != null)
+        // Удаляем из цепочки студента
+        RemoveFromStudentChain(student, registration);
+        
+        // Удаляем из цепочки курса
+        RemoveFromCourseChain(course, registration);
+    }
+
+    private void RemoveFromStudentChain(Student student, Link registration)
+    {
+        // Ищем предыдущую связь в цепочке студента
+        Link? prev = null;
+        Link? current = student.FirstEnrollment as Link;
+
+        while (current != null)
         {
-            // Проверяем, что это Link и нужный курс
-            if (currS is Link link && link.Course == course)
+            if (current == registration)
             {
-                // Если удаляем первый элемент
-                if (prevS == null)
-                    student.FirstEnrollment = link.NextStudentLink as Link;  // Первым становится следующий
-                else if (prevS is Link prevLink)  // Если удаляем не первый
-                    prevLink.SetNextStudentLink(link.NextStudentLink as Link);  // Пропускаем текущий
-
-                break;  // Завершаем поиск
+                // Нашли удаляемую связь
+                if (prev == null)
+                {
+                    // Удаляем первую связь
+                    if (registration.NextStudentLink is Student)
+                        student.FirstEnrollment = null;  // Больше нет связей
+                    else
+                        student.FirstEnrollment = registration.NextStudentLink as Link;
+                }
+                else
+                {
+                    // Удаляем из середины/конца
+                    prev.SetNextStudentLink(registration.NextStudentLink);
+                }
+                return;
             }
 
-            // Переходим к следующему элементу
-            prevS = currS;
-            currS = (currS as Link)?.NextStudentLink;
+            // Переход к следующей связи
+            Base? next = current.NextStudentLink;
+            if (next is Student) break;  // Дошли до конца цепочки
+            prev = current;
+            current = next as Link;
         }
+    }
 
-        // Если связь не найдена - выходим
-        if (currS == null) return;
+    private void RemoveFromCourseChain(Course course, Link registration)
+    {
+        // Ищем предыдущую связь в цепочке курса
+        Link? prev = null;
+        Link? current = course.FirstEnrollment as Link;
 
-        // --- удаляем из цепочки курса ---
-        Base? prevC = null;              // Предыдущий элемент в списке курса
-        Base? currC = course.FirstEnrollment;  // Текущий элемент (начинаем с первого)
-
-        // Проходим по всем студентам курса
-        while (currC != null)
+        while (current != null)
         {
-            // Проверяем, что это Link и нужный студент
-            if (currC is Link link && link.Student == student)
+            if (current == registration)
             {
-                // Если удаляем первый элемент
-                if (prevC == null)
-                    course.FirstEnrollment = link.NextCourseLink as Link;  // Первым становится следующий
-                else if (prevC is Link prevLink)  // Если удаляем не первый
-                    prevLink.SetNextCourseLink(link.NextCourseLink as Link);  // Пропускаем текущий
-
-                return;  // Завершаем операцию
+                // Нашли удаляемую связь
+                if (prev == null)
+                {
+                    // Удаляем первую связь
+                    if (registration.NextCourseLink is Course)
+                        course.FirstEnrollment = null;  // Больше нет связей
+                    else
+                        course.FirstEnrollment = registration.NextCourseLink as Link;
+                }
+                else
+                {
+                    // Удаляем из середины/конца
+                    prev.SetNextCourseLink(registration.NextCourseLink);
+                }
+                return;
             }
 
-            // Переходим к следующему элементу
-            prevC = currC;
-            currC = (currC as Link)?.NextCourseLink;
+            // Переход к следующей связи
+            Base? next = current.NextCourseLink;
+            if (next is Course) break;  // Дошли до конца цепочки
+            prev = current;
+            current = next as Link;
         }
     }
 
     // removeStudent(s) – удалить студента s со всех курсов
-    public void RemoveStudent(string studentName)
+    public void RemoveStudent(char[] studentName)
     {
-        // Ищем студента по имени
-        var student = studentHashArray.FindStudent(studentName);
-        if (student == null) return;  // Студент не найден
+        Student? student = studentHashArray.FindStudent(studentName);
+        if (student == null) return;
 
-        // Проходим по всем курсам студента
-        Base? link = student.FirstEnrollment;
+        // Проходим по всем связям студента
+        Link? link = student.FirstEnrollment as Link;
         while (link != null)
         {
-            // Сохраняем ссылку на следующую связь
-            var next = (link as Link)?.NextStudentLink;
-            
-            // Если это Link - удаляем связь
-            if (link is Link enrollmentLink)
-                RemoveEnrollment(student, enrollmentLink.Course!);
+            // Находим курс по цепочке
+            Base? courseLink = link.NextCourseLink;
+            while (courseLink != null && courseLink is Link)
+            {
+                courseLink = ((Link)courseLink).NextCourseLink;
+            }
 
-            // Переходим к следующей связи
-            link = next;
+            if (courseLink is Course course)
+            {
+                // Удаляем связь с курса
+                RemoveFromCourseChain(course, link);
+            }
+
+            // Переход к следующей связи студента
+            Base? next = link.NextStudentLink;
+            if (next is Student) break;
+            link = next as Link;
         }
 
+        // Очищаем все связи студента
+        student.FirstEnrollment = null;
+        
         // Удаляем студента из хеш-таблицы
         studentHashArray.RemoveStudent(studentName);
     }
 
     // removeCourse(c) – удалить всех студентов с курса c
-    public void RemoveCourse(string courseName)
+    public void RemoveCourse(char[] courseName)
     {
-        // Ищем курс по имени
-        var course = courseHashArray.FindCourse(courseName);
-        if (course == null) return;  // Курс не найден
+        Course? course = courseHashArray.FindCourse(courseName);
+        if (course == null) return;
 
-        // Проходим по всем студентам курса
-        Base? link = course.FirstEnrollment;
+        // Проходим по всем связям курса
+        Link? link = course.FirstEnrollment as Link;
         while (link != null)
         {
-            // Сохраняем ссылку на следующую связь
-            var next = (link as Link)?.NextCourseLink;
-            
-            // Если это Link - удаляем связь
-            if (link is Link enrollmentLink)
-                RemoveEnrollment(enrollmentLink.Student!, course);
+            // Находим студента по цепочке
+            Base? studentLink = link.NextStudentLink;
+            while (studentLink != null && studentLink is Link)
+            {
+                studentLink = ((Link)studentLink).NextStudentLink;
+            }
 
-            // Переходим к следующей связи
-            link = next;
+            if (studentLink is Student student)
+            {
+                // Удаляем связь со студента
+                RemoveFromStudentChain(student, link);
+            }
+
+            // Переход к следующей связи курса
+            Base? next = link.NextCourseLink;
+            if (next is Course) break;
+            link = next as Link;
         }
 
+        // Очищаем все связи курса
+        course.FirstEnrollment = null;
+        
         // Удаляем курс из хеш-таблицы
         courseHashArray.RemoveCourse(courseName);
     }
 
     // printCoursesOfStudent(s) – вывести список курсов, посещаемых студентом s
-    public void PrintCoursesOfStudent(string studentName)
+    public void PrintCoursesOfStudent(char[] studentName)
     {
-        // Ищем студента по имени
-        var student = studentHashArray.FindStudent(studentName);
-        if (student == null) return;  // Студент не найден
+        Student? student = studentHashArray.FindStudent(studentName);
+        if (student == null) return;
 
-        // Выводим имя студента
-        Console.Write($"{studentName}: ");
+        Console.Write($"{CharArrayToString(studentName)}: ");
 
-        // Проходим по всем курсам студента
-        Base? link = student.FirstEnrollment;
-        bool first = true;  // Флаг первого элемента (для правильной расстановки запятых)
+        Link? link = student.FirstEnrollment as Link;
+        bool first = true;
 
         while (link != null)
         {
-            if (link is Link enrollmentLink)
+            // Ищем курс по цепочке
+            Base? courseLink = link.NextCourseLink;
+            while (courseLink != null && courseLink is Link)
             {
-                // Добавляем запятую перед всеми элементами, кроме первого
-                if (!first) Console.Write(", ");
-                // Выводим название курса (char[] -> string)
-                Console.Write(new string(enrollmentLink.Course!.Name));
-                first = false;  // Первый элемент уже выведен
+                courseLink = ((Link)courseLink).NextCourseLink;
             }
 
-            // Переходим к следующему курсу
-            link = (link as Link)?.NextStudentLink;
+            if (courseLink is Course course)
+            {
+                if (!first) Console.Write(", ");
+                Console.Write(CharArrayToString(course.Name));
+                first = false;
+            }
+
+            // Переход к следующей связи
+            Base? next = link.NextStudentLink;
+            if (next is Student) break;
+            link = next as Link;
         }
 
-        // Переход на новую строку
         Console.WriteLine();
     }
 
     // printStudentsOfCourse(c) – вывести список всех студентов посещающих курс c
-    public void PrintStudentsOfCourse(string courseName)
+    public void PrintStudentsOfCourse(char[] courseName)
     {
-        // Ищем курс по имени
-        var course = courseHashArray.FindCourse(courseName);
-        if (course == null) return;  // Курс не найден
+        Course? course = courseHashArray.FindCourse(courseName);
+        if (course == null) return;
 
-        // Выводим название курса
-        Console.Write($"{courseName}: ");
+        Console.Write($"{CharArrayToString(courseName)}: ");
 
-        // Проходим по всем студентам курса
-        Base? link = course.FirstEnrollment;
-        bool first = true;  // Флаг первого элемента
+        Link? link = course.FirstEnrollment as Link;
+        bool first = true;
 
         while (link != null)
         {
-            if (link is Link enrollmentLink)
+            // Ищем студента по цепочке
+            Base? studentLink = link.NextStudentLink;
+            while (studentLink != null && studentLink is Link)
             {
-                // Добавляем запятую перед всеми элементами, кроме первого
-                if (!first) Console.Write(", ");
-                // Выводим имя студента (char[] -> string)
-                Console.Write(new string(enrollmentLink.Student!.Name));
-                first = false;  // Первый элемент уже выведен
+                studentLink = ((Link)studentLink).NextStudentLink;
             }
 
-            // Переходим к следующему студенту
-            link = (link as Link)?.NextCourseLink;
+            if (studentLink is Student student)
+            {
+                if (!first) Console.Write(", ");
+                Console.Write(CharArrayToString(student.Name));
+                first = false;
+            }
+
+            // Переход к следующей связи
+            Base? next = link.NextCourseLink;
+            if (next is Course) break;
+            link = next as Link;
         }
 
-        // Переход на новую строку
         Console.WriteLine();
     }
 
     // Добавление нового студента
-    public void AddStudent(string name) => studentHashArray.AddStudent(name);
+    public void AddStudent(char[] name) => studentHashArray.AddStudent(name);
 
     // Добавление нового курса
-    public void AddCourse(string name) => courseHashArray.AddCourse(name);
+    public void AddCourse(char[] name) => courseHashArray.AddCourse(name);
 
     // GetStudentCourses - возвращает массив названий курсов студента
-    public string[] GetStudentCourses(string studentName)
+    public char[][] GetStudentCourses(char[] studentName)
     {
-        // Ищем студента по имени
-        var student = studentHashArray.FindStudent(studentName);
-        if (student == null) return Array.Empty<string>();  // Студент не найден
+        Student? student = studentHashArray.FindStudent(studentName);
+        if (student == null) return Array.Empty<char[]>();
 
-        // Список для хранения названий курсов
-        var temp = new List<string>();
-        // Проходим по всем курсам студента
-        Base? link = student.FirstEnrollment;
+        List<char[]> courses = new List<char[]>();
+        Link? link = student.FirstEnrollment as Link;
 
         while (link != null)
         {
-            if (link is Link enrollmentLink)
-                // Добавляем название курса в список
-                temp.Add(new string(enrollmentLink.Course!.Name));
+            // Ищем курс по цепочке
+            Base? courseLink = link.NextCourseLink;
+            while (courseLink != null && courseLink is Link)
+            {
+                courseLink = ((Link)courseLink).NextCourseLink;
+            }
 
-            // Переходим к следующему курсу
-            link = (link as Link)?.NextStudentLink;
+            if (courseLink is Course course)
+            {
+                courses.Add(course.Name);
+            }
+
+            // Переход к следующей связи
+            Base? next = link.NextStudentLink;
+            if (next is Student) break;
+            link = next as Link;
         }
 
-        // Возвращаем массив названий курсов
-        return temp.ToArray();
+        return courses.ToArray();
     }
 
     // GetCourseStudents - возвращает массив имен студентов курса
-    public string[] GetCourseStudents(string courseName)
+    public char[][] GetCourseStudents(char[] courseName)
     {
-        // Ищем курс по имени
-        var course = courseHashArray.FindCourse(courseName);
-        if (course == null) return Array.Empty<string>();  // Курс не найден
+        Course? course = courseHashArray.FindCourse(courseName);
+        if (course == null) return Array.Empty<char[]>();
 
-        // Список для хранения имен студентов
-        var temp = new List<string>();
-        // Проходим по всем студентам курса
-        Base? link = course.FirstEnrollment;
+        List<char[]> students = new List<char[]>();
+        Link? link = course.FirstEnrollment as Link;
 
         while (link != null)
         {
-            if (link is Link enrollmentLink)
-                // Добавляем имя студента в список
-                temp.Add(new string(enrollmentLink.Student!.Name));
+            // Ищем студента по цепочке
+            Base? studentLink = link.NextStudentLink;
+            while (studentLink != null && studentLink is Link)
+            {
+                studentLink = ((Link)studentLink).NextStudentLink;
+            }
 
-            // Переходим к следующему студенту
-            link = (link as Link)?.NextCourseLink;
+            if (studentLink is Student student)
+            {
+                students.Add(student.Name);
+            }
+
+            // Переход к следующей связи
+            Base? next = link.NextCourseLink;
+            if (next is Course) break;
+            link = next as Link;
         }
 
-        // Возвращаем массив имен студентов
-        return temp.ToArray();
+        return students.ToArray();
     }
 
     // Вывод всех связей "студент-курс"
@@ -312,23 +380,30 @@ public class MultiList : IMultiList
     {
         Console.WriteLine("=== Все связи ===");
 
-        // Получаем всех студентов из хеш-таблицы
-        var allStudents = studentHashArray.GetAllStudents();
-        // Для каждого студента
-        foreach (var student in allStudents)
+        Student?[] allStudents = studentHashArray.GetAllStudents();
+        foreach (Student? student in allStudents)
         {
-            if (student == null) continue;  // Пропускаем пустые ячейки
+            if (student == null) continue;
 
-            // Проходим по всем курсам студента
-            Base? link = student.FirstEnrollment;
+            Link? link = student.FirstEnrollment as Link;
             while (link != null)
             {
-                if (link is Link enrollmentLink)
-                    // Выводим связь: студент -> курс
-                    Console.WriteLine($"{new string(student.Name)} -> {new string(enrollmentLink.Course!.Name)}");
+                // Ищем курс по цепочке
+                Base? courseLink = link.NextCourseLink;
+                while (courseLink != null && courseLink is Link)
+                {
+                    courseLink = ((Link)courseLink).NextCourseLink;
+                }
 
-                // Переходим к следующему курсу
-                link = (link as Link)?.NextStudentLink;
+                if (courseLink is Course course)
+                {
+                    Console.WriteLine($"{CharArrayToString(student.Name)} -> {CharArrayToString(course.Name)}");
+                }
+
+                // Переход к следующей связи
+                Base? next = link.NextStudentLink;
+                if (next is Student) break;
+                link = next as Link;
             }
         }
     }
@@ -336,18 +411,37 @@ public class MultiList : IMultiList
     // ===== поиск конкретной связи между студентом и курсом =====
     private Link? FindEnrollment(Student student, Course course)
     {
-        // Проходим по всем курсам студента
-        Base? link = student.FirstEnrollment;
+        Link? link = student.FirstEnrollment as Link;
+
         while (link != null)
         {
-            // Проверяем, что это Link и нужный курс
-            if (link is Link enrollmentLink && enrollmentLink.Course == course)
-                return enrollmentLink;  // Нашли нужную связь
+            // Ищем курс по цепочке
+            Base? courseLink = link.NextCourseLink;
+            while (courseLink != null && courseLink is Link)
+            {
+                courseLink = ((Link)courseLink).NextCourseLink;
+            }
 
-            // Переходим к следующему курсу
-            link = (link as Link)?.NextStudentLink;
+            if (courseLink == course)
+                return link;
+
+            // Переход к следующей связи
+            Base? next = link.NextStudentLink;
+            if (next is Student) break;
+            link = next as Link;
         }
 
-        return null;  // Связь не найдена
+        return null;
+    }
+
+    // Вспомогательный метод: преобразование char[] в string
+    private string CharArrayToString(char[] array)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < array.Length && array[i] != '\0'; i++)
+        {
+            sb.Append(array[i]);
+        }
+        return sb.ToString();
     }
 }

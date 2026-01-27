@@ -1,8 +1,6 @@
 namespace Lab4.Models;
 public class Link : Base
 {
-    public Student? Student { get; set; }
-    public Course? Course { get; set; }
     public Base? NextStudentLink { get; set; }
     public Base? NextCourseLink { get; set; }
 
@@ -13,8 +11,8 @@ public class Link : Base
     }
     
     // Методы для установки связей
-    internal void SetNextStudentLink(Link? link) => NextStudentLink = link;
-    internal void SetNextCourseLink(Link? link) => NextCourseLink = link;
+    internal void SetNextStudentLink(Base? link) => NextStudentLink = link;
+    internal void SetNextCourseLink(Base? link) => NextCourseLink = link;
 
     public override bool IsHasNext { get => true; }
     

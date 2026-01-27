@@ -12,20 +12,19 @@ public class CourseHashArray
     }
 
     // Добавить курс
-    public void AddCourse(string name)
+    public void AddCourse(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
             if (_coursesTable[index] == null)
             {
-                _coursesTable[index] = new Course(nameChars);
+                _coursesTable[index] = new Course(name);
                 return;
             }
             
-            if (ArraysEqual(_coursesTable[index]!.Name, nameChars))
+            if (ArraysEqual(_coursesTable[index]!.Name, name))
                 return; // Уже существует
             
             index = (index + 1) % Capacity;
@@ -33,10 +32,9 @@ public class CourseHashArray
     }
 
     // Найти курс
-    public Course? FindCourse(string name)
+    public Course? FindCourse(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
@@ -45,7 +43,7 @@ public class CourseHashArray
             if (course == null)
                 return null;
                 
-            if (ArraysEqual(course.Name, nameChars))
+            if (ArraysEqual(course.Name, name))
                 return course;
                 
             index = (index + 1) % Capacity;
@@ -55,17 +53,16 @@ public class CourseHashArray
     }
 
     // Удалить курс
-    public void RemoveCourse(string name)
+    public void RemoveCourse(char[] name)
     {
-        char[] nameChars = name.ToCharArray();
-        int index = Hash(nameChars);
+        int index = Hash(name);
         
         for (int i = 0; i < Capacity; i++)
         {
             if (_coursesTable[index] == null)
                 return;
                 
-            if (ArraysEqual(_coursesTable[index]!.Name, nameChars))
+            if (ArraysEqual(_coursesTable[index]!.Name, name))
             {
                 _coursesTable[index] = null;
                 return;
