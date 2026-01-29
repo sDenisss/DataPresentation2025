@@ -3,6 +3,7 @@ public class Link : Base
 {
     public Base? NextStudentLink { get; set; }
     public Base? NextCourseLink { get; set; }
+    public override bool IsHasNext { get => true; }
 
     public Link(Base nextStudentLink, Base nextCourseLink)
     {
@@ -14,6 +15,5 @@ public class Link : Base
     internal void SetNextStudentLink(Base? link) => NextStudentLink = link;
     internal void SetNextCourseLink(Base? link) => NextCourseLink = link;
 
-    public override bool IsHasNext { get => true; }
     
 }

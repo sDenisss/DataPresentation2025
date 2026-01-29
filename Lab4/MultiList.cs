@@ -39,19 +39,15 @@ public class MultiList : IMultiList
             course = courseHashArray.FindCourse(courseName);
         }
 
-        // Проверка на null после добавления
-        if (student == null || course == null)
-            return;
-
         // Проверка: студент уже записан на этот курс?
-        if (FindEnrollment(student, course) != null)
+        if (FindEnrollment(student!, course!) != null)
             return;
 
         // Создание новой связи Link между студентом и курсом
         Link link = new Link(null!, null!);
 
         // Добавление связи в список студента (вставка в начало)
-        if (student.FirstEnrollment == null)
+        if (student!.FirstEnrollment == null)
             link.SetNextStudentLink(student);  // Если список пуст - ссылка на самого студента
         else
             link.SetNextStudentLink(student.FirstEnrollment);  // Иначе ссылка на предыдущий первый элемент
@@ -59,7 +55,7 @@ public class MultiList : IMultiList
         student.FirstEnrollment = link;  // Новый элемент становится первым
 
         // Добавление связи в список курса (вставка в начало)
-        if (course.FirstEnrollment == null)
+        if (course!.FirstEnrollment == null)
             link.SetNextCourseLink(course);  // Если список пуст - ссылка на сам курс
         else
             link.SetNextCourseLink(course.FirstEnrollment);  // Иначе ссылка на предыдущий первый элемент
@@ -90,18 +86,18 @@ public class MultiList : IMultiList
         if (registration == null) return;  // Связь не найдена
 
         // Удаление из цепочки студента
-        RemoveFromStudentChain(student, registration);
+        RemoveFromStudentLink(student, registration);
         
         // Удаление из цепочки курса
-        RemoveFromCourseChain(course, registration);
+        RemoveFromCourseLink(course, registration);
     }
 
     // Удаление связи из цепочки студента
-    private void RemoveFromStudentChain(Student student, Link registration)
+    private void RemoveFromStudentLink(Student student, Link registration)
     {
         // Поиск предыдущей связи в цепочке
         Link? prev = null;
-        Link? current = student.FirstEnrollment as Link;
+        Link? current = student.FirstEnrollment;
 
         // Проход по цепочке студента
         while (current != null)
@@ -133,11 +129,11 @@ public class MultiList : IMultiList
     }
 
     // Удаление связи из цепочки курса
-    private void RemoveFromCourseChain(Course course, Link registration)
+    private void RemoveFromCourseLink(Course course, Link registration)
     {
         // Поиск предыдущей связи в цепочке
         Link? prev = null;
-        Link? current = course.FirstEnrollment as Link;
+        Link? current = course.FirstEnrollment;
 
         // Проход по цепочке курса
         while (current != null)
@@ -176,7 +172,7 @@ public class MultiList : IMultiList
         if (student == null) return;  // Студент не найден
 
         // Проход по всем связям студента
-        Link? link = student.FirstEnrollment as Link;
+        Link? link = student.FirstEnrollment;
         while (link != null)
         {
             // Поиск курса через цепочку связей
@@ -189,7 +185,7 @@ public class MultiList : IMultiList
             // Если нашли курс - удаляем связь с его стороны
             if (courseLink is Course course)
             {
-                RemoveFromCourseChain(course, link);
+                RemoveFromCourseLink(course, link);
             }
 
             // Переход к следующей связи студента
@@ -213,7 +209,7 @@ public class MultiList : IMultiList
         if (course == null) return;  // Курс не найден
 
         // Проход по всем связям курса
-        Link? link = course.FirstEnrollment as Link;
+        Link? link = course.FirstEnrollment;
         while (link != null)
         {
             // Поиск студента через цепочку связей
@@ -226,7 +222,7 @@ public class MultiList : IMultiList
             // Если нашли студента - удаляем связь с его стороны
             if (studentLink is Student student)
             {
-                RemoveFromStudentChain(student, link);
+                RemoveFromStudentLink(student, link);
             }
 
             // Переход к следующей связи курса
@@ -247,13 +243,14 @@ public class MultiList : IMultiList
     {
         // Поиск студента
         Student? student = studentHashArray.FindStudent(studentName);
+        // Вывод заголовка с именем студента
+        Console.Write($"{CharArrayToString(studentName)}: \n");
+
         if (student == null) return;  // Студент не найден
 
-        // Вывод заголовка с именем студента
-        Console.Write($"{CharArrayToString(studentName)}: ");
 
         // Начало цепочки связей студента
-        Link? link = student.FirstEnrollment as Link;
+        Link? link = student.FirstEnrollment;
         bool first = true;  // Флаг для правильной расстановки запятых
 
         // Проход по всем связям студента
@@ -288,13 +285,14 @@ public class MultiList : IMultiList
     {
         // Поиск курса
         Course? course = courseHashArray.FindCourse(courseName);
+        // Вывод заголовка с названием курса
+        Console.Write($"{CharArrayToString(courseName)}: \n");
+
         if (course == null) return;  // Курс не найден
 
-        // Вывод заголовка с названием курса
-        Console.Write($"{CharArrayToString(courseName)}: ");
 
         // Начало цепочки связей курса
-        Link? link = course.FirstEnrollment as Link;
+        Link? link = course.FirstEnrollment;
         bool first = true;  // Флаг для правильной расстановки запятых
 
         // Проход по всем связям курса
@@ -339,7 +337,7 @@ public class MultiList : IMultiList
 
         // Список для хранения названий курсов
         List<char[]> courses = new List<char[]>();
-        Link? link = student.FirstEnrollment as Link;
+        Link? link = student.FirstEnrollment;
 
         // Проход по всем связям студента
         while (link != null)
@@ -375,7 +373,7 @@ public class MultiList : IMultiList
 
         // Список для хранения имен студентов
         List<char[]> students = new List<char[]>();
-        Link? link = course.FirstEnrollment as Link;
+        Link? link = course.FirstEnrollment;
 
         // Проход по всем связям курса
         while (link != null)
@@ -416,7 +414,7 @@ public class MultiList : IMultiList
             if (student == null) continue;  // Пропуск пустых ячеек
 
             // Проход по всем связям студента
-            Link? link = student.FirstEnrollment as Link;
+            Link? link = student.FirstEnrollment;
             while (link != null)
             {
                 // Поиск курса через цепочку связей
@@ -444,7 +442,7 @@ public class MultiList : IMultiList
     private Link? FindEnrollment(Student student, Course course)
     {
         // Начало цепочки связей студента
-        Link? link = student.FirstEnrollment as Link;
+        Link? link = student.FirstEnrollment;
 
         // Проход по всем связям студента
         while (link != null)

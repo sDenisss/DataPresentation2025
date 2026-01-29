@@ -6,9 +6,9 @@ public class Program
     {
         var multiList = new MultiList();
 
-        char[] name1 = {'A', 'l', 'i', 'c', 'e'};
-        char[] name2 = {'B', 'o', 'b'};
-        char[] name3 = {'C', 'h', 'a', 'r', 'l', 'i', 'e'};
+        char[] name1 = {'A', 'l', 'a', 'n'};
+        char[] name2 = {'M', 'a', 'r', 'y'};
+        char[] name3 = {'A', 'n', 'd', 'y'};
 
         char[] course1 = {'M', 'a', 't', 'h'};
         char[] course2 = {'P', 'h', 'y', 's'};
@@ -42,6 +42,8 @@ public class Program
         // Remove student (should remove all his enrollments)
         multiList.RemoveStudent(name1);
 
+        multiList.PrintCoursesOfStudent(name1);
+
         // Remove course (should remove all enrollments to it)
         multiList.RemoveCourse(course3);
 
@@ -51,10 +53,7 @@ public class Program
         Console.WriteLine();
 
         // Используем новые методы для вывода
-        Console.WriteLine("Students in Physics:");
         multiList.PrintStudentsOfCourse(course2); 
         
-        Console.WriteLine("\nCourses of Bob:");
-        multiList.PrintCoursesOfStudent(name2);
     }
 }
